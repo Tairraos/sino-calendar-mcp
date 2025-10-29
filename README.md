@@ -42,17 +42,36 @@ npm run build
 ### 1. 直接启动服务
 
 ```bash
-# 方式1：使用启动脚本
+# 方式1：使用npx（推荐，无需安装）
+npx sino-calendar-mcp
+
+# 方式2：使用启动脚本
 node start.js
 
-# 方式2：使用npm脚本
+# 方式3：使用npm脚本
 npm start
 
-# 方式3：直接运行编译后的文件
+# 方式4：直接运行编译后的文件
 node dist/index.js
 ```
 
 ### 2. 作为MCP服务器
+
+#### 方式1：使用npx（推荐）
+
+```json
+{
+  "mcpServers": {
+    "sino-calendar": {
+      "command": "npx",
+      "args": ["-y", "sino-calendar-mcp"],
+      "env": {}
+    }
+  }
+}
+```
+
+#### 方式2：本地安装
 
 在MCP客户端配置文件中添加：
 
