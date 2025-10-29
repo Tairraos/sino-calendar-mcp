@@ -25,7 +25,7 @@ describe('DateUtils', () => {
     it('should return correct weekday for different days', () => {
       const sunday = new Date(2025, 0, 5); // 2025-01-05 is Sunday
       expect(DateUtils.formatChineseWeek(sunday)).toBe('星期日');
-      
+
       const monday = new Date(2025, 0, 6); // 2025-01-06 is Monday
       expect(DateUtils.formatChineseWeek(monday)).toBe('星期一');
     });
@@ -75,7 +75,7 @@ describe('DateUtils', () => {
       const startDate = new Date(2025, 0, 1);
       const endDate = new Date(2025, 0, 3);
       const dates = DateUtils.generateDateRange(startDate, endDate);
-      
+
       expect(dates).toHaveLength(3);
       expect(dates[0].getDate()).toBe(1);
       expect(dates[1].getDate()).toBe(2);
@@ -87,7 +87,7 @@ describe('DateUtils', () => {
     it('should return true for weekend days', () => {
       const saturday = new Date(2025, 0, 4); // 2025-01-04 is Saturday
       const sunday = new Date(2025, 0, 5); // 2025-01-05 is Sunday
-      
+
       expect(DateUtils.isWeekend(saturday)).toBe(true);
       expect(DateUtils.isWeekend(sunday)).toBe(true);
     });

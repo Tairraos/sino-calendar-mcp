@@ -90,7 +90,7 @@ export class Validator {
      * 验证get_date_info工具的参数
      */
     static validateGetDateInfoArgs(args) {
-        if (!args.hasOwnProperty('date')) {
+        if (!Object.prototype.hasOwnProperty.call(args, 'date')) {
             return { isValid: false, error: '缺少必需参数: date' };
         }
         return this.validateDateString(args.date);
@@ -99,10 +99,10 @@ export class Validator {
      * 验证get_date_range_info工具的参数
      */
     static validateGetDateRangeInfoArgs(args) {
-        if (!args.hasOwnProperty('startDate')) {
+        if (!Object.prototype.hasOwnProperty.call(args, 'startDate')) {
             return { isValid: false, error: '缺少必需参数: startDate' };
         }
-        if (!args.hasOwnProperty('endDate')) {
+        if (!Object.prototype.hasOwnProperty.call(args, 'endDate')) {
             return { isValid: false, error: '缺少必需参数: endDate' };
         }
         return this.validateDateRange(args.startDate, args.endDate);

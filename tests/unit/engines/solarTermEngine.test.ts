@@ -38,7 +38,7 @@ describe('SolarTermEngine', () => {
     it('should return dates for solar terms', () => {
       const year = 2025;
       const solarTermsMap = SolarTermEngine.getYearSolarTerms(year);
-      
+
       for (const [name, date] of solarTermsMap) {
         expect(typeof name).toBe('string');
         expect(date).toBeInstanceOf(Date);
@@ -52,13 +52,28 @@ describe('SolarTermEngine', () => {
       expect(terms2024).toBeInstanceOf(Map);
       expect(terms2025).toBeInstanceOf(Map);
     });
+
+    it('should return all 24 solar terms for a complete year', () => {
+      const year = 2025;
+      const solarTermsMap = SolarTermEngine.getYearSolarTerms(year);
+
+      // Should have exactly 24 solar terms
+      expect(solarTermsMap.size).toBe(24);
+
+      // Check for specific solar terms
+      expect(solarTermsMap.has('立春')).toBe(true);
+      expect(solarTermsMap.has('春分')).toBe(true);
+      expect(solarTermsMap.has('夏至')).toBe(true);
+      expect(solarTermsMap.has('秋分')).toBe(true);
+      expect(solarTermsMap.has('冬至')).toBe(true);
+    });
   });
 
   describe('getNextSolarTerm', () => {
     it('should return next solar term or undefined', () => {
       const date = new Date(2025, 0, 1);
       const nextTerm = SolarTermEngine.getNextSolarTerm(date);
-      
+
       if (nextTerm) {
         expect(nextTerm).toHaveProperty('name');
         expect(nextTerm).toHaveProperty('date');
@@ -73,9 +88,30 @@ describe('SolarTermEngine', () => {
     it('should return solar term after given date', () => {
       const date = new Date(2025, 0, 1);
       const nextTerm = SolarTermEngine.getNextSolarTerm(date);
-      
+
       if (nextTerm) {
         expect(nextTerm.date.getFullYear()).toBeGreaterThanOrEqual(2025);
+      }
+    });
+
+    it('should find next solar term within same year', () => {
+      const date = new Date(2025, 0, 15); // Mid January
+      const nextTerm = SolarTermEngine.getNextSolarTerm(date);
+
+      expect(nextTerm).toBeDefined();
+      if (nextTerm) {
+        expect(nextTerm.date.getTime()).toBeGreaterThan(date.getTime());
+        expect(nextTerm.name).toBeTruthy();
+      }
+    });
+
+    it('should find next year solar term when at end of year', () => {
+      const date = new Date(2025, 11, 30); // End of December
+      const nextTerm = SolarTermEngine.getNextSolarTerm(date);
+
+      if (nextTerm) {
+        // Should be in next year or very end of current year
+        expect(nextTerm.date.getTime()).toBeGreaterThan(date.getTime());
       }
     });
   });
@@ -84,7 +120,7 @@ describe('SolarTermEngine', () => {
     it('should return previous solar term or undefined', () => {
       const date = new Date(2025, 11, 31); // End of year
       const prevTerm = SolarTermEngine.getPreviousSolarTerm(date);
-      
+
       if (prevTerm) {
         expect(prevTerm).toHaveProperty('name');
         expect(prevTerm).toHaveProperty('date');
@@ -99,8 +135,39 @@ describe('SolarTermEngine', () => {
     it('should return solar term before given date', () => {
       const date = new Date(2025, 11, 31);
       const prevTerm = SolarTermEngine.getPreviousSolarTerm(date);
-      
+
       if (prevTerm) {
+        expect(prevTerm.date.getFullYear()).toBeLessThanOrEqual(2025);
+      }
+    });
+
+    it('should find previous solar term within same year', () => {
+      const date = new Date(2025, 11, 15); // Mid December
+      const prevTerm = SolarTermEngine.getPreviousSolarTerm(date);
+
+      expect(prevTerm).toBeDefined();
+      if (prevTerm) {
+        expect(prevTerm.date.getTime()).toBeLessThan(date.getTime());
+        expect(prevTerm.name).toBeTruthy();
+      }
+    });
+
+    it('should find previous year solar term when at start of year', () => {
+      const date = new Date(2025, 0, 2); // Start of January
+      const prevTerm = SolarTermEngine.getPreviousSolarTerm(date);
+
+      if (prevTerm) {
+        // Should be in previous year or very start of current year
+        expect(prevTerm.date.getTime()).toBeLessThan(date.getTime());
+      }
+    });
+
+    it('should handle edge case with sorted solar terms', () => {
+      const date = new Date(2025, 5, 15); // Mid year
+      const prevTerm = SolarTermEngine.getPreviousSolarTerm(date);
+
+      if (prevTerm) {
+        expect(prevTerm.date.getTime()).toBeLessThan(date.getTime());
         expect(prevTerm.date.getFullYear()).toBeLessThanOrEqual(2025);
       }
     });
@@ -120,12 +187,8 @@ describe('SolarTermEngine', () => {
     });
 
     it('should handle different dates', () => {
-      const dates = [
-        new Date(2025, 0, 1),
-        new Date(2025, 5, 15),
-        new Date(2025, 11, 31)
-      ];
-      
+      const dates = [new Date(2025, 0, 1), new Date(2025, 5, 15), new Date(2025, 11, 31)];
+
       dates.forEach(date => {
         const isTerm = SolarTermEngine.isSolarTerm(date);
         expect(typeof isTerm).toBe('boolean');
@@ -138,7 +201,7 @@ describe('SolarTermEngine', () => {
       const allTerms = SolarTermEngine.getAllSolarTerms();
       expect(Array.isArray(allTerms)).toBe(true);
       expect(allTerms.length).toBeGreaterThan(0);
-      
+
       allTerms.forEach(term => {
         expect(term).toHaveProperty('name');
         expect(typeof term.name).toBe('string');

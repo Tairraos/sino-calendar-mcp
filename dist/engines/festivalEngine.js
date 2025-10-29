@@ -138,7 +138,7 @@ export class FestivalEngine {
         const firstDay = new Date(year, month - 1, 1);
         const firstDayOfWeek = firstDay.getDay();
         // 计算第一个目标星期几的日期
-        let firstTargetDay = 1 + (dayOfWeek - firstDayOfWeek + 7) % 7;
+        const firstTargetDay = 1 + ((dayOfWeek - firstDayOfWeek + 7) % 7);
         // 计算第N个目标星期几的日期
         return firstTargetDay + (nth - 1) * 7;
     }
@@ -150,7 +150,6 @@ export class FestivalEngine {
         const lunar = solar.getLunar();
         // 除夕是农历年的最后一天
         const month = lunar.getMonth();
-        const day = lunar.getDay();
         // 农历12月的最后一天
         if (month === 12) {
             // 获取下一天的农历日期

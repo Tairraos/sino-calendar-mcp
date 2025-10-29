@@ -67,8 +67,7 @@ export class SolarTermEngine {
         const year = date.getFullYear();
         const yearSolarTerms = this.getYearSolarTerms(year);
         // 将节气按日期排序
-        const sortedSolarTerms = Array.from(yearSolarTerms.entries())
-            .sort((a, b) => a[1].getTime() - b[1].getTime());
+        const sortedSolarTerms = Array.from(yearSolarTerms.entries()).sort((a, b) => a[1].getTime() - b[1].getTime());
         // 找到当前日期之前的最后一个节气
         for (let i = sortedSolarTerms.length - 1; i >= 0; i--) {
             const [name, solarTermDate] = sortedSolarTerms[i];
@@ -78,8 +77,7 @@ export class SolarTermEngine {
         }
         // 如果当年没有找到，查找上一年的最后一个节气
         const prevYearSolarTerms = this.getYearSolarTerms(year - 1);
-        const sortedPrevYearSolarTerms = Array.from(prevYearSolarTerms.entries())
-            .sort((a, b) => a[1].getTime() - b[1].getTime());
+        const sortedPrevYearSolarTerms = Array.from(prevYearSolarTerms.entries()).sort((a, b) => a[1].getTime() - b[1].getTime());
         const lastSolarTerm = sortedPrevYearSolarTerms[sortedPrevYearSolarTerms.length - 1];
         if (lastSolarTerm) {
             return { name: lastSolarTerm[0], date: lastSolarTerm[1] };

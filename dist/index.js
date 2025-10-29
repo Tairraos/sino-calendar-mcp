@@ -40,11 +40,11 @@ class SinoCalendarMCPServer {
                                 date: {
                                     type: 'string',
                                     description: '日期，格式为YYYY-MM-DD，如：2025-01-01',
-                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                                }
+                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                                },
                             },
-                            required: ['date']
-                        }
+                            required: ['date'],
+                        },
                     },
                     {
                         name: 'get_date_range_info',
@@ -55,18 +55,18 @@ class SinoCalendarMCPServer {
                                 startDate: {
                                     type: 'string',
                                     description: '开始日期，格式为YYYY-MM-DD',
-                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$'
+                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$',
                                 },
                                 endDate: {
                                     type: 'string',
                                     description: '结束日期，格式为YYYY-MM-DD',
-                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                                }
+                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                                },
                             },
-                            required: ['startDate', 'endDate']
-                        }
-                    }
-                ]
+                            required: ['startDate', 'endDate'],
+                        },
+                    },
+                ],
             };
         });
         // 注册工具调用处理器
@@ -127,7 +127,7 @@ class SinoCalendarMCPServer {
      * 设置错误处理
      */
     setupErrorHandling() {
-        this.server.onerror = (error) => {
+        this.server.onerror = error => {
             console.error('[MCP Server Error]', error);
         };
         process.on('SIGINT', async () => {
@@ -155,7 +155,7 @@ async function main() {
 }
 // 如果直接运行此文件，则启动服务器
 if (import.meta.url === `file://${process.argv[1]}`) {
-    main().catch((error) => {
+    main().catch(error => {
         console.error('启动服务器失败:', error);
         process.exit(1);
     });

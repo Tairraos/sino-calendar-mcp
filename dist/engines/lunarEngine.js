@@ -1,4 +1,4 @@
-import { Solar, LunarYear } from 'lunar-javascript';
+import { LunarYear, Solar } from 'lunar-javascript';
 /**
  * 农历转换引擎
  */
@@ -14,7 +14,6 @@ export class LunarEngine {
         // 获取年份天干地支
         const yearInGanZhi = lunar.getYearInGanZhi();
         // 获取月份
-        const month = lunar.getMonth();
         const monthInChinese = lunar.getMonthInChinese();
         // 判断是否为闰月
         const isLeapMonth = lunar.leap > 0;
@@ -37,7 +36,6 @@ export class LunarEngine {
     static getMonthInChinese(date) {
         const solar = Solar.fromDate(date);
         const lunar = solar.getLunar();
-        const month = lunar.getMonth();
         const monthInChinese = lunar.getMonthInChinese();
         const isLeapMonth = lunar.leap > 0;
         return isLeapMonth ? `闰${monthInChinese}` : monthInChinese;

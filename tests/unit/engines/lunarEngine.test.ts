@@ -110,10 +110,10 @@ describe('LunarEngine', () => {
     it('should handle different years', () => {
       const date2024 = new Date(2024, 0, 1);
       const date2025 = new Date(2025, 0, 1);
-      
+
       const leapMonth2024 = LunarEngine.getLeapMonth(date2024);
       const leapMonth2025 = LunarEngine.getLeapMonth(date2025);
-      
+
       expect(typeof leapMonth2024).toBe('number');
       expect(typeof leapMonth2025).toBe('number');
       expect(leapMonth2024).toBeGreaterThanOrEqual(0);

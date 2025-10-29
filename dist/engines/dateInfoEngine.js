@@ -30,7 +30,7 @@ export class DateInfoEngine {
             date: dateStr,
             week: week,
             dayType: workdayInfo.dayType,
-            lunarDate: lunarDate
+            lunarDate: lunarDate,
         };
         // 添加可选字段
         if (workdayInfo.adjusted) {
@@ -62,7 +62,7 @@ export class DateInfoEngine {
         // 获取每个日期的信息
         const dateInfos = dates.map(date => this.getDateInfo(date));
         return {
-            dates: dateInfos
+            dates: dateInfos,
         };
     }
     /**
@@ -83,8 +83,8 @@ export class DateInfoEngine {
                 isSolarTerm: SolarTermEngine.isSolarTerm(date),
                 isLeapMonth: LunarEngine.isLeapMonth(date),
                 yearHolidaysCount: WorkdayEngine.getYearHolidays(year).length,
-                yearWorkingDaysCount: WorkdayEngine.getYearWorkingDays(year).length
-            }
+                yearWorkingDaysCount: WorkdayEngine.getYearWorkingDays(year).length,
+            },
         };
     }
     /**
@@ -100,7 +100,7 @@ export class DateInfoEngine {
         const festivals = dates
             .map(date => ({
             date: DateUtils.formatChineseDate(date),
-            festival: FestivalEngine.getFestival(date)
+            festival: FestivalEngine.getFestival(date),
         }))
             .filter(item => item.festival);
         return festivals;
@@ -112,11 +112,13 @@ export class DateInfoEngine {
      */
     static getYearSolarTerms(year) {
         const solarTermsMap = SolarTermEngine.getYearSolarTerms(year);
-        const solarTermsList = Array.from(solarTermsMap.entries()).map(([name, date]) => ({
+        const solarTermsList = Array.from(solarTermsMap.entries())
+            .map(([name, date]) => ({
             name,
             date: DateUtils.formatChineseDate(date),
-            dateObj: date
-        })).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+            dateObj: date,
+        }))
+            .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
         return solarTermsList.map(({ name, date }) => ({ name, date }));
     }
     /**
@@ -136,7 +138,7 @@ export class DateInfoEngine {
         return {
             centerDate: this.getDateInfo(date),
             surroundingDates: importantDates,
-            totalDays: rangeInfo.dates.length
+            totalDays: rangeInfo.dates.length,
         };
     }
 }

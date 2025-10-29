@@ -30,7 +30,7 @@ class SinoCalendarMCPServer {
         capabilities: {
           tools: {},
         },
-      }
+      },
     );
 
     this.setupToolHandlers();
@@ -54,11 +54,11 @@ class SinoCalendarMCPServer {
                 date: {
                   type: 'string',
                   description: '日期，格式为YYYY-MM-DD，如：2025-01-01',
-                  pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                }
+                  pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                },
               },
-              required: ['date']
-            }
+              required: ['date'],
+            },
           },
           {
             name: 'get_date_range_info',
@@ -69,23 +69,23 @@ class SinoCalendarMCPServer {
                 startDate: {
                   type: 'string',
                   description: '开始日期，格式为YYYY-MM-DD',
-                  pattern: '^\\d{4}-\\d{2}-\\d{2}$'
+                  pattern: '^\\d{4}-\\d{2}-\\d{2}$',
                 },
                 endDate: {
                   type: 'string',
                   description: '结束日期，格式为YYYY-MM-DD',
-                  pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                }
+                  pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                },
               },
-              required: ['startDate', 'endDate']
-            }
-          }
-        ] as Tool[]
+              required: ['startDate', 'endDate'],
+            },
+          },
+        ] as Tool[],
       };
     });
 
     // 注册工具调用处理器
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async request => {
       const { name, arguments: args } = request.params;
 
       // 记录操作日志
@@ -102,10 +102,10 @@ class SinoCalendarMCPServer {
         switch (name) {
           case 'get_date_info':
             return await this.handleGetDateInfo(args);
-          
+
           case 'get_date_range_info':
             return await this.handleGetDateRangeInfo(args);
-          
+
           default:
             throw new ValidationError(`未知的工具: ${name}`);
         }
@@ -157,7 +157,7 @@ class SinoCalendarMCPServer {
    * 设置错误处理
    */
   private setupErrorHandling(): void {
-    this.server.onerror = (error) => {
+    this.server.onerror = error => {
       console.error('[MCP Server Error]', error);
     };
 
@@ -190,7 +190,7 @@ async function main() {
 
 // 如果直接运行此文件，则启动服务器
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
+  main().catch(error => {
     console.error('启动服务器失败:', error);
     process.exit(1);
   });

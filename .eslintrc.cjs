@@ -5,9 +5,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-  ],
+  extends: ['eslint:recommended'],
   root: true,
   env: {
     node: true,
@@ -18,7 +16,7 @@ module.exports = {
   rules: {
     // TypeScript specific rules (basic ones only)
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    
+
     // General ESLint rules
     'no-console': 'off', // Allow console.log for MCP server
     'no-debugger': 'error',
@@ -26,27 +24,33 @@ module.exports = {
     'no-unused-expressions': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
-    
-    // Code style
-    'indent': ['error', 2],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
+
+    // Code style (indent handled by Prettier)
+    // indent: ['error', 2],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
     'comma-dangle': ['error', 'always-multiline'],
     'object-curly-spacing': ['error', 'always'],
     'array-bracket-spacing': ['error', 'never'],
-    'space-before-function-paren': ['error', {
-      'anonymous': 'always',
-      'named': 'never',
-      'asyncArrow': 'always',
-    }],
-    
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'always',
+        named: 'never',
+        asyncArrow: 'always',
+      },
+    ],
+
     // Import/Export
-    'sort-imports': ['error', {
-      'ignoreCase': false,
-      'ignoreDeclarationSort': true,
-      'ignoreMemberSort': false,
-      'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
-      'allowSeparatedGroups': false,
-    }],
+    'sort-imports': [
+      'error',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: true,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: false,
+      },
+    ],
   },
 };

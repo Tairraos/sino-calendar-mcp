@@ -14,7 +14,7 @@ describe('FestivalEngine', () => {
       expect(festival).toBe('圣诞节');
     });
 
-    it('should return correct festival for Valentine\'s Day', () => {
+    it("should return correct festival for Valentine's Day", () => {
       const date = new Date(2025, 1, 14); // 2025-02-14
       const festival = FestivalEngine.getFestival(date);
       expect(festival).toBe('情人节');
@@ -42,14 +42,14 @@ describe('FestivalEngine', () => {
   });
 
   describe('western festivals', () => {
-    it('should return correct western festival for Mother\'s Day', () => {
+    it("should return correct western festival for Mother's Day", () => {
       // Mother's Day is second Sunday of May
       const date = new Date(2025, 4, 11); // 2025-05-11 (second Sunday of May 2025)
       const festival = FestivalEngine.getFestival(date);
       expect(festival).toBe('母亲节');
     });
 
-    it('should return correct western festival for Father\'s Day', () => {
+    it("should return correct western festival for Father's Day", () => {
       // Father's Day is third Sunday of June
       const date = new Date(2025, 5, 15); // 2025-06-15 (third Sunday of June 2025)
       const festival = FestivalEngine.getFestival(date);
@@ -69,7 +69,7 @@ describe('FestivalEngine', () => {
       const festivals = FestivalEngine.getAllFestivals();
       expect(Array.isArray(festivals)).toBe(true);
       expect(festivals.length).toBeGreaterThan(0);
-      
+
       // Check if it includes some known festivals
       const festivalNames = festivals.map(f => f.name);
       expect(festivalNames).toContain('元旦');

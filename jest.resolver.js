@@ -6,12 +6,12 @@ export default function resolver(request, options) {
   if (request.endsWith('.js')) {
     const tsPath = request.replace(/\.js$/, '.ts');
     const resolvedTsPath = resolve(options.basedir, tsPath);
-    
+
     if (existsSync(resolvedTsPath)) {
       return resolvedTsPath;
     }
   }
-  
+
   // Fall back to default resolution
   return options.defaultResolver(request, options);
 }

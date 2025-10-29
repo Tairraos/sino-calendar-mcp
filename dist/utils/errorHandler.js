@@ -71,11 +71,11 @@ export class ErrorHandler {
                         error: true,
                         type: errorType,
                         message: errorMessage,
-                        timestamp: new Date().toISOString()
-                    }, null, 2)
-                }
+                        timestamp: new Date().toISOString(),
+                    }, null, 2),
+                },
             ],
-            isError: true
+            isError: true,
         };
     }
     /**
@@ -88,13 +88,13 @@ export class ErrorHandler {
             const result = await fn();
             return {
                 success: true,
-                data: result
+                data: result,
             };
         }
         catch (error) {
             return {
                 success: false,
-                error: this.handleError(error)
+                error: this.handleError(error),
             };
         }
     }
@@ -117,9 +117,9 @@ export class ErrorHandler {
             content: [
                 {
                     type: 'text',
-                    text: JSON.stringify(data, null, 2)
-                }
-            ]
+                    text: JSON.stringify(data, null, 2),
+                },
+            ],
         };
     }
     /**
@@ -134,7 +134,7 @@ export class ErrorHandler {
             operation,
             params,
             success: result !== undefined,
-            ...(result && { result })
+            ...(result && { result }),
         };
         console.log(`[Operation] ${JSON.stringify(logEntry)}`);
     }

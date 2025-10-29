@@ -40,12 +40,14 @@ console.log('\n' + '='.repeat(50) + '\n');
 console.log('📅 测试3: 日期范围查询（春节假期）');
 try {
   const startDate = new Date(2025, 0, 28); // 2025年1月28日
-  const endDate = new Date(2025, 1, 3);   // 2025年2月3日
+  const endDate = new Date(2025, 1, 3); // 2025年2月3日
   const rangeInfo = DateInfoEngine.getDateRangeInfo(startDate, endDate);
   console.log('✅ 春节假期范围信息:');
   console.log(`共查询 ${rangeInfo.dates.length} 天`);
   rangeInfo.dates.forEach(dateInfo => {
-    console.log(`${dateInfo.date} ${dateInfo.week} ${dateInfo.dayType}${dateInfo.adjusted ? ` (${dateInfo.adjusted})` : ''}${dateInfo.festival ? ` - ${dateInfo.festival}` : ''}`);
+    console.log(
+      `${dateInfo.date} ${dateInfo.week} ${dateInfo.dayType}${dateInfo.adjusted ? ` (${dateInfo.adjusted})` : ''}${dateInfo.festival ? ` - ${dateInfo.festival}` : ''}`,
+    );
   });
 } catch (error) {
   console.error('❌ 测试3失败:', error.message);
@@ -63,13 +65,15 @@ const testCases = [
   { date: '25-01-01', expected: false, desc: '年份格式错误' },
   { date: '2025/01/01', expected: false, desc: '分隔符错误' },
   { date: '', expected: false, desc: '空字符串' },
-  { date: null, expected: false, desc: 'null值' }
+  { date: null, expected: false, desc: 'null值' },
 ];
 
 testCases.forEach(testCase => {
   const validation = Validator.validateDateString(testCase.date);
   const result = validation.isValid === testCase.expected ? '✅' : '❌';
-  console.log(`${result} ${testCase.desc}: "${testCase.date}" -> ${validation.isValid ? '有效' : validation.error}`);
+  console.log(
+    `${result} ${testCase.desc}: "${testCase.date}" -> ${validation.isValid ? '有效' : validation.error}`,
+  );
 });
 
 console.log('\n' + '='.repeat(50) + '\n');
@@ -94,13 +98,15 @@ try {
   const testDates = [
     new Date(2025, 0, 27), // 2025年1月27日（周一，调休工作日）
     new Date(2025, 0, 29), // 2025年1月29日（春节，休息日）
-    new Date(2025, 1, 3),  // 2025年2月3日（春节假期最后一天）
-    new Date(2025, 1, 4)   // 2025年2月4日（正常工作日）
+    new Date(2025, 1, 3), // 2025年2月3日（春节假期最后一天）
+    new Date(2025, 1, 4), // 2025年2月4日（正常工作日）
   ];
 
   testDates.forEach(date => {
     const dateInfo = DateInfoEngine.getDateInfo(date);
-    console.log(`✅ ${dateInfo.date} ${dateInfo.week}: ${dateInfo.dayType}${dateInfo.adjusted ? ` (${dateInfo.adjusted})` : ''}`);
+    console.log(
+      `✅ ${dateInfo.date} ${dateInfo.week}: ${dateInfo.dayType}${dateInfo.adjusted ? ` (${dateInfo.adjusted})` : ''}`,
+    );
   });
 } catch (error) {
   console.error('❌ 测试6失败:', error.message);
@@ -114,7 +120,7 @@ try {
   // 测试日期范围限制
   const startDate = new Date(2025, 0, 1);
   const endDate = new Date(2026, 0, 3); // 367天，超过366天限制
-  
+
   try {
     DateInfoEngine.getDateRangeInfo(startDate, endDate);
     console.log('❌ 应该抛出范围过大错误');

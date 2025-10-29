@@ -2,7 +2,7 @@
 
 /**
  * 中国农历节日转换MCP服务启动脚本
- * 
+ *
  * 使用方法：
  * 1. 直接运行：node start.js
  * 2. 通过npm：npm start
@@ -13,11 +13,11 @@ import { SinoCalendarMCPServer } from './dist/index.js';
 
 async function main() {
   console.error('🚀 正在启动中国农历节日转换MCP服务...');
-  
+
   try {
     const server = new SinoCalendarMCPServer();
     await server.start();
-    
+
     console.error('✅ 服务启动成功！');
     console.error('📋 可用工具：');
     console.error('   - get_date_info: 获取指定日期的完整信息');
@@ -25,7 +25,6 @@ async function main() {
     console.error('');
     console.error('💡 提示：此服务通过标准输入/输出与MCP客户端通信');
     console.error('   如需测试，请使用MCP客户端或运行 npm test');
-    
   } catch (error) {
     console.error('❌ 服务启动失败:', error.message);
     console.error('');
@@ -49,7 +48,7 @@ process.on('SIGTERM', () => {
 });
 
 // 处理未捕获的异常
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   console.error('❌ 未捕获的异常:', error);
   process.exit(1);
 });
