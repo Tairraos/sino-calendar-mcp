@@ -19,8 +19,8 @@ export class LunarEngine {
     // 获取月份
     const monthInChinese = lunar.getMonthInChinese();
 
-    // 判断是否为闰月
-    const isLeapMonth = lunar.leap > 0;
+    // 判断是否为闰月（月份为负数表示闰月）
+    const isLeapMonth = lunar.getMonth() < 0;
     const monthStr = isLeapMonth ? `闰${monthInChinese}` : monthInChinese;
 
     // 获取日期
@@ -45,7 +45,7 @@ export class LunarEngine {
     const solar = Solar.fromDate(date);
     const lunar = solar.getLunar();
     const monthInChinese = lunar.getMonthInChinese();
-    const isLeapMonth = lunar.leap > 0;
+    const isLeapMonth = lunar.getMonth() < 0;
 
     return isLeapMonth ? `闰${monthInChinese}` : monthInChinese;
   }
@@ -67,15 +67,10 @@ export class LunarEngine {
   static isLeapMonth(date: Date): boolean {
     const solar = Solar.fromDate(date);
     const lunar = solar.getLunar();
-    const year = lunar.getYear();
     const month = lunar.getMonth();
 
-    // 获取该年的闰月
-    const lunarYear = (LunarYear as any).fromYear(year);
-    const leapMonth = lunarYear.getLeapMonth();
-
-    // 检查当前月份是否是闰月
-    return leapMonth === month;
+    // 在lunar-javascript中，闰月的月份是负数
+    return month < 0;
   }
 
   /**

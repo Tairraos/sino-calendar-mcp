@@ -17,11 +17,20 @@ describe('LunarEngine', () => {
     });
 
     it('should handle leap months', () => {
-      // Test with a date that might be in a leap month
-      const date = new Date(2023, 2, 22); // 2023-03-22
+      // 2023年有闰二月，测试闰二月的日期
+      const date = new Date(2023, 2, 22); // 2023-03-22 (闰二月初一)
       const lunar = LunarEngine.convertToLunar(date);
       expect(typeof lunar).toBe('string');
       expect(lunar).toContain('年');
+      expect(lunar).toContain('闰');
+    });
+
+    it('should handle actual leap month dates', () => {
+      // 2020年有闰四月，测试闰四月的日期
+      const date = new Date(2020, 4, 23); // 2020-05-23 (闰四月初一)
+      const lunar = LunarEngine.convertToLunar(date);
+      expect(typeof lunar).toBe('string');
+      expect(lunar).toContain('闰');
     });
   });
 
@@ -57,9 +66,18 @@ describe('LunarEngine', () => {
     });
 
     it('should handle leap months correctly', () => {
-      const date = new Date(2023, 2, 22); // Potential leap month
+      // 测试闰月情况
+      const date = new Date(2020, 4, 23); // 2020-05-23 (闰四月初一)
       const month = LunarEngine.getMonthInChinese(date);
       expect(typeof month).toBe('string');
+      expect(month).toContain('闰');
+    });
+
+    it('should handle non-leap months correctly', () => {
+      const date = new Date(2025, 0, 29); // 非闰月 (正月)
+      const month = LunarEngine.getMonthInChinese(date);
+      expect(typeof month).toBe('string');
+      expect(month).not.toContain('闰');
     });
   });
 
@@ -96,6 +114,20 @@ describe('LunarEngine', () => {
       const isLeap = LunarEngine.isLeapMonth(date);
       expect(isLeap).toBe(false);
     });
+
+    it('should correctly identify leap months', () => {
+      // 2020年有闰四月，测试闰四月的日期
+      const date = new Date(2020, 4, 23); // 2020-05-23 (闰四月初一)
+      const isLeap = LunarEngine.isLeapMonth(date);
+      expect(isLeap).toBe(true);
+    });
+
+    it('should correctly identify regular months in leap years', () => {
+      // 2020年有闰四月，但测试正常的五月
+      const date = new Date(2020, 5, 21); // 2020-06-21 (五月初一)
+      const isLeap = LunarEngine.isLeapMonth(date);
+      expect(isLeap).toBe(false);
+    });
   });
 
   describe('getLeapMonth', () => {
@@ -118,6 +150,20 @@ describe('LunarEngine', () => {
       expect(typeof leapMonth2025).toBe('number');
       expect(leapMonth2024).toBeGreaterThanOrEqual(0);
       expect(leapMonth2025).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should return correct leap month for leap years', () => {
+      // 2020年有闰四月，使用2020年中期的日期
+      const date2020 = new Date(2020, 5, 1); // 2020-06-01
+      const leapMonth2020 = LunarEngine.getLeapMonth(date2020);
+      expect(leapMonth2020).toBe(4); // 闰四月
+    });
+
+    it('should return 0 for non-leap years', () => {
+      // 2025年没有闰月
+      const date2025 = new Date(2025, 0, 1);
+      const leapMonth2025 = LunarEngine.getLeapMonth(date2025);
+      expect(leapMonth2025).toBe(0); // 无闰月
     });
   });
 });

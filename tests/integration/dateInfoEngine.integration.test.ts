@@ -305,5 +305,68 @@ describe('DateInfoEngine Integration Tests', () => {
       expect(surroundingInfo.surroundingDates.length).toBe(1);
       expect(surroundingInfo.surroundingDates[0].date).toContain('2025年6月15日');
     });
+
+    it('should handle zero days parameter (line 154 coverage)', () => {
+      // Test with zero days to ensure line 154 is covered
+      const centerDate = new Date(2025, 5, 15); // 2025-06-15
+      const days = 0; // Zero days - should still execute line 154
+      const surroundingInfo = DateInfoEngine.getSurroundingInfo(centerDate, days);
+
+      expect(surroundingInfo.centerDate).toBeDefined();
+      expect(surroundingInfo.totalDays).toBe(1); // Only center date
+      expect(Array.isArray(surroundingInfo.surroundingDates)).toBe(true);
+    });
+
+    it('should handle very large days parameter (line 154 coverage)', () => {
+      // Test with very large days to ensure line 154 is covered
+      const centerDate = new Date(2025, 5, 15); // 2025-06-15
+      const days = 100; // Very large days
+      const surroundingInfo = DateInfoEngine.getSurroundingInfo(centerDate, days);
+
+      expect(surroundingInfo.centerDate).toBeDefined();
+      expect(surroundingInfo.totalDays).toBe(201); // 100 before + center + 100 after
+      expect(Array.isArray(surroundingInfo.surroundingDates)).toBe(true);
+    });
+
+    it('should handle edge case with month boundary crossing (line 154 coverage)', () => {
+      // Test with date at month boundary to ensure line 154 is covered
+      const centerDate = new Date(2025, 0, 1); // 2025-01-01 (start of year)
+      const days = 10; // This will cross into previous year
+      const surroundingInfo = DateInfoEngine.getSurroundingInfo(centerDate, days);
+
+      expect(surroundingInfo.centerDate).toBeDefined();
+      expect(surroundingInfo.totalDays).toBe(21); // 10 before + center + 10 after
+      expect(Array.isArray(surroundingInfo.surroundingDates)).toBe(true);
+    });
+
+    it('should execute line 154 with explicit test (line 154 coverage)', () => {
+      // Directly test the getSurroundingInfo method to ensure line 154 is executed
+      const centerDate = new Date(2025, 5, 15); // 2025-06-15
+      const days = 1; // Simple case that should definitely execute line 154
+
+      // Call the method - this should execute line 154: startDate.setDate(startDate.getDate() - days);
+      const surroundingInfo = DateInfoEngine.getSurroundingInfo(centerDate, days);
+
+      expect(surroundingInfo).toBeDefined();
+      expect(surroundingInfo.centerDate).toBeDefined();
+      expect(surroundingInfo.totalDays).toBe(3); // 1 before + center + 1 after
+      expect(Array.isArray(surroundingInfo.surroundingDates)).toBe(true);
+
+      // Verify the center date is correct
+      expect(surroundingInfo.centerDate.date).toContain('2025年6月15日');
+    });
+
+    it('should use default parameter value (default branch coverage)', () => {
+      // Test the default parameter branch: days: number = 7
+      const centerDate = new Date(2025, 5, 15); // 2025-06-15
+
+      // Call without the days parameter to trigger the default value branch
+      const surroundingInfo = DateInfoEngine.getSurroundingInfo(centerDate);
+
+      expect(surroundingInfo).toBeDefined();
+      expect(surroundingInfo.centerDate).toBeDefined();
+      expect(surroundingInfo.totalDays).toBe(15); // 7 before + center + 7 after
+      expect(Array.isArray(surroundingInfo.surroundingDates)).toBe(true);
+    });
   });
 });

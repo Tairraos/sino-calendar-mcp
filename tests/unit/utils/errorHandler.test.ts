@@ -1,9 +1,9 @@
 import {
-  ErrorHandler,
-  ValidationError,
   DateParseError,
   DateRangeError,
+  ErrorHandler,
   ToolNotFoundError,
+  ValidationError,
 } from '../../../src/utils/errorHandler';
 
 describe('ErrorHandler', () => {
@@ -285,6 +285,22 @@ describe('ErrorHandler', () => {
       expect(formatted).toContain('Invalid date');
     });
 
+    it('should format DateRangeError', () => {
+      const error = new DateRangeError('Date out of range');
+      const formatted = ErrorHandler.formatUserFriendlyError(error);
+
+      expect(typeof formatted).toBe('string');
+      expect(formatted).toContain('Date out of range');
+    });
+
+    it('should format ToolNotFoundError', () => {
+      const error = new ToolNotFoundError('unknown_tool');
+      const formatted = ErrorHandler.formatUserFriendlyError(error);
+
+      expect(typeof formatted).toBe('string');
+      expect(formatted).toContain('unknown_tool');
+    });
+
     it('should format generic Error', () => {
       const error = new Error('Generic error');
       const formatted = ErrorHandler.formatUserFriendlyError(error);
@@ -298,7 +314,15 @@ describe('ErrorHandler', () => {
       const formatted = ErrorHandler.formatUserFriendlyError(error);
 
       expect(typeof formatted).toBe('string');
-      expect(formatted.length).toBeGreaterThan(0);
+      expect(formatted).toBe('发生了未知错误，请稍后重试');
+    });
+
+    it('should handle null and undefined', () => {
+      const nullFormatted = ErrorHandler.formatUserFriendlyError(null);
+      const undefinedFormatted = ErrorHandler.formatUserFriendlyError(undefined);
+
+      expect(nullFormatted).toBe('发生了未知错误，请稍后重试');
+      expect(undefinedFormatted).toBe('发生了未知错误，请稍后重试');
     });
   });
 });

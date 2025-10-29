@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { DateInfoEngine } from './dist/engines/dateInfoEngine.js';
-import { DateUtils } from './dist/utils/dateUtils.js';
 import { Validator } from './dist/utils/validator.js';
 
 /**

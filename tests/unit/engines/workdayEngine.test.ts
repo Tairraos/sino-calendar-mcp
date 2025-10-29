@@ -168,4 +168,64 @@ describe('WorkdayEngine', () => {
       expect(prevWorkday.getTime()).toBeLessThan(monday.getTime());
     });
   });
+
+  describe('getHolidayAdjustment', () => {
+    it('should return adjustment rule for existing holiday', () => {
+      // Test with a known holiday adjustment (if any exists in the data)
+      const adjustment = WorkdayEngine.getHolidayAdjustment(2025, '元旦');
+
+      if (adjustment) {
+        expect(adjustment).toHaveProperty('year');
+        expect(adjustment).toHaveProperty('holiday');
+        expect(adjustment.year).toBe(2025);
+        expect(adjustment.holiday).toBe('元旦');
+      } else {
+        // If no adjustment exists, it should return undefined
+        expect(adjustment).toBeUndefined();
+      }
+    });
+
+    it('should return undefined for non-existent holiday', () => {
+      const adjustment = WorkdayEngine.getHolidayAdjustment(2025, '不存在的节日');
+      expect(adjustment).toBeUndefined();
+    });
+
+    it('should return undefined for non-existent year', () => {
+      const adjustment = WorkdayEngine.getHolidayAdjustment(1900, '元旦');
+      expect(adjustment).toBeUndefined();
+    });
+  });
+
+  describe('getDayType - Edge Cases', () => {
+    it('should handle working date that is not weekend (line 38 coverage)', () => {
+      // Create a mock rule with a weekday (Monday) in workingDates
+      const mockRules = [
+        {
+          year: 2025,
+          holiday: '测试节日',
+          holidayDates: [],
+          workingDates: ['2025-01-06'], // Monday - not a weekend
+        },
+      ];
+
+      // Mock the adjustmentRules module
+      jest.doMock('../../../src/data/adjustmentRules', () => ({
+        adjustmentRules: mockRules,
+      }));
+
+      // Re-import WorkdayEngine to use mocked data
+      jest.resetModules();
+      const { WorkdayEngine: MockedWorkdayEngine } = require('../../../src/engines/workdayEngine');
+
+      const monday = new Date(2025, 0, 6); // 2025-01-06 is Monday
+      const result = MockedWorkdayEngine.getDayType(monday);
+
+      expect(result.dayType).toBe('工作日');
+      expect(result.adjusted).toBeUndefined(); // Should not have adjusted property
+
+      // Restore original modules
+      jest.dontMock('../../../src/data/adjustmentRules');
+      jest.resetModules();
+    });
+  });
 });

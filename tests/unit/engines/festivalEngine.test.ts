@@ -92,4 +92,50 @@ describe('FestivalEngine', () => {
       expect(westernFestivals.length).toBeGreaterThan(0);
     });
   });
+
+  describe('getFestivalsByDate', () => {
+    it('should return festival array for festival dates', () => {
+      const date = new Date(2025, 11, 25); // Christmas
+      const festivals = FestivalEngine.getFestivalsByDate(date);
+      expect(Array.isArray(festivals)).toBe(true);
+      expect(festivals.length).toBeGreaterThan(0);
+      expect(festivals[0].name).toBe('圣诞节');
+    });
+
+    it('should return empty array for non-festival dates', () => {
+      const date = new Date(2025, 0, 15); // Random date
+      const festivals = FestivalEngine.getFestivalsByDate(date);
+      expect(Array.isArray(festivals)).toBe(true);
+      expect(festivals.length).toBe(0);
+    });
+  });
+
+  describe('getFestivalsByType', () => {
+    it('should return solar festivals', () => {
+      const solarFestivals = FestivalEngine.getFestivalsByType('solar');
+      expect(Array.isArray(solarFestivals)).toBe(true);
+      expect(solarFestivals.length).toBeGreaterThan(0);
+      expect(solarFestivals.every(f => f.type === 'solar')).toBe(true);
+    });
+
+    it('should return lunar festivals', () => {
+      const lunarFestivals = FestivalEngine.getFestivalsByType('lunar');
+      expect(Array.isArray(lunarFestivals)).toBe(true);
+      expect(lunarFestivals.length).toBeGreaterThan(0);
+      expect(lunarFestivals.every(f => f.type === 'lunar')).toBe(true);
+    });
+
+    it('should return western festivals', () => {
+      const westernFestivals = FestivalEngine.getFestivalsByType('western');
+      expect(Array.isArray(westernFestivals)).toBe(true);
+      expect(westernFestivals.length).toBeGreaterThan(0);
+      expect(westernFestivals.every(f => f.type === 'western')).toBe(true);
+    });
+
+    it('should return empty array for unknown type', () => {
+      const unknownFestivals = FestivalEngine.getFestivalsByType('unknown');
+      expect(Array.isArray(unknownFestivals)).toBe(true);
+      expect(unknownFestivals.length).toBe(0);
+    });
+  });
 });
