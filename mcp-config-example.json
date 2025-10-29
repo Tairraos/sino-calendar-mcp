@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "sino-calendar": {
+      "command": "node",
+      "args": ["/path/to/sino-calendar-mcp/start.js"],
+      "env": {},
+      "description": "中国农历节日转换服务 - 提供公历与农历转换、节日识别、24节气计算等功能"
+    }
+  }
+}

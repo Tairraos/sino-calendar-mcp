@@ -1,0 +1,66 @@
+{
+  "name": "sino-calendar-mcp",
+  "version": "1.0.0",
+  "description": "中国农历节日转换MCP服务 - 提供公历日期到中国农历、节日、24节气的智能转换功能",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node start.js",
+    "dev": "tsx src/index.ts",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:coverage": "jest --coverage",
+    "test:legacy": "node test.js",
+    "check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts"
+  },
+  "keywords": [
+    "mcp",
+    "chinese-calendar",
+    "lunar-calendar",
+    "festivals",
+    "solar-terms"
+  ],
+  "author": "Tairraos",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tairraos/sino-calendar-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tairraos/sino-calendar-mcp/issues"
+  },
+  "homepage": "https://github.com/Tairraos/sino-calendar-mcp#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "start.js"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "date-fns": "^4.1.0",
+    "lunar-javascript": "^1.7.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "prettier": "^3.2.5",
+    "c8": "^9.1.0"
+  }
+}
