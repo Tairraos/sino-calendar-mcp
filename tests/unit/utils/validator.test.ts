@@ -310,4 +310,104 @@ describe('Validator', () => {
       }
     });
   });
+
+  describe('validateLunarDateString', () => {
+    it('should validate correct lunar date strings', () => {
+      const result = Validator.validateLunarDateString('农历2025年正月初一');
+      expect(result.isValid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should validate lunar date strings with leap month', () => {
+      const result = Validator.validateLunarDateString('农历2025年闰四月十五');
+      expect(result.isValid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should reject non-string inputs', () => {
+      const result = Validator.validateLunarDateString(123);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('农历日期必须是字符串类型');
+    });
+
+    it('should reject empty strings', () => {
+      const result = Validator.validateLunarDateString('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('农历日期不能为空');
+    });
+
+    it('should reject invalid lunar date format', () => {
+      const result = Validator.validateLunarDateString('2025年正月初一');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('农历日期格式无效');
+    });
+  });
+
+  describe('validateFestivalName', () => {
+    it('should validate correct festival names', () => {
+      const result1 = Validator.validateFestivalName('春节');
+      expect(result1.isValid).toBe(true);
+      expect(result1.error).toBeUndefined();
+
+      const result2 = Validator.validateFestivalName('元宵节');
+      expect(result2.isValid).toBe(true);
+      expect(result2.error).toBeUndefined();
+
+      const result3 = Validator.validateFestivalName('清明节');
+      expect(result3.isValid).toBe(true);
+      expect(result3.error).toBeUndefined();
+    });
+
+    it('should reject non-string inputs', () => {
+      const result = Validator.validateFestivalName(123);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('节日名称必须是字符串类型');
+    });
+
+    it('should reject empty strings', () => {
+      const result = Validator.validateFestivalName('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('节日名称不能为空');
+    });
+
+    it('should reject unsupported festival names', () => {
+      const result = Validator.validateFestivalName('未知节日');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('不支持的节日名称');
+    });
+  });
+
+  describe('validateSolarTermName', () => {
+    it('should validate correct solar term names', () => {
+      const result1 = Validator.validateSolarTermName('立春');
+      expect(result1.isValid).toBe(true);
+      expect(result1.error).toBeUndefined();
+
+      const result2 = Validator.validateSolarTermName('雨水');
+      expect(result2.isValid).toBe(true);
+      expect(result2.error).toBeUndefined();
+
+      const result3 = Validator.validateSolarTermName('冬至');
+      expect(result3.isValid).toBe(true);
+      expect(result3.error).toBeUndefined();
+    });
+
+    it('should reject non-string inputs', () => {
+      const result = Validator.validateSolarTermName(123);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('节气名称必须是字符串类型');
+    });
+
+    it('should reject empty strings', () => {
+      const result = Validator.validateSolarTermName('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('节气名称不能为空');
+    });
+
+    it('should reject unsupported solar term names', () => {
+      const result = Validator.validateSolarTermName('未知节气');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('不支持的节气名称');
+    });
+  });
 });

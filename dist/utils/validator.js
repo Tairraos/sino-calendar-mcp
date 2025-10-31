@@ -82,6 +82,10 @@ export class Validator {
                 return this.validateGetDateInfoArgs(args);
             case 'get_date_range_info':
                 return this.validateGetDateRangeInfoArgs(args);
+            case 'reverse_query_by_name':
+                return this.validateReverseQueryByNameArgs(args);
+            case 'query_by_date_range':
+                return this.validateQueryByDateRangeArgs(args);
             default:
                 return { isValid: false, error: `未知的工具: ${toolName}` };
         }
@@ -138,6 +142,129 @@ export class Validator {
         }
         if (month < 1 || month > 12) {
             return { isValid: false, error: '月份必须在1-12之间' };
+        }
+        return { isValid: true };
+    }
+    /**
+     * 验证反向查询参数
+     * @param args 参数对象
+     * @returns 验证结果
+     */
+    static validateReverseQueryByNameArgs(args) {
+        if (!Object.prototype.hasOwnProperty.call(args, 'query')) {
+            return { isValid: false, error: '缺少必需参数: query' };
+        }
+        if (!Object.prototype.hasOwnProperty.call(args, 'type')) {
+            return { isValid: false, error: '缺少必需参数: type' };
+        }
+        // 验证查询内容
+        if (typeof args.query !== 'string' || !args.query.trim()) {
+            return { isValid: false, error: '查询内容必须是有效的字符串' };
+        }
+        // 验证查询类型
+        const validTypes = ['lunar', 'festival', 'solar_term'];
+        if (!validTypes.includes(args.type)) {
+            return { isValid: false, error: '查询类型必须是: lunar, festival, solar_term 之一' };
+        }
+        // 验证年份（可选参数）
+        if (args.year !== undefined) {
+            const yearValidation = this.validateYear(args.year);
+            if (!yearValidation.isValid) {
+                return yearValidation;
+            }
+        }
+        return { isValid: true };
+    }
+    /**
+     * 验证日期范围条件查询参数
+     * @param args 参数对象
+     * @returns 验证结果
+     */
+    static validateQueryByDateRangeArgs(args) {
+        if (!Object.prototype.hasOwnProperty.call(args, 'startDate')) {
+            return { isValid: false, error: '缺少必需参数: startDate' };
+        }
+        if (!Object.prototype.hasOwnProperty.call(args, 'endDate')) {
+            return { isValid: false, error: '缺少必需参数: endDate' };
+        }
+        if (!Object.prototype.hasOwnProperty.call(args, 'type')) {
+            return { isValid: false, error: '缺少必需参数: type' };
+        }
+        // 验证日期范围
+        const dateRangeValidation = this.validateDateRange(args.startDate, args.endDate);
+        if (!dateRangeValidation.isValid) {
+            return dateRangeValidation;
+        }
+        // 验证查询类型
+        const validTypes = ['rest_days', 'work_days', 'festivals', 'solar_terms'];
+        if (!validTypes.includes(args.type)) {
+            return { isValid: false, error: '查询类型必须是: rest_days, work_days, festivals, solar_terms 之一' };
+        }
+        return { isValid: true };
+    }
+    /**
+     * 验证农历日期字符串
+     * @param lunarDateStr 农历日期字符串
+     * @returns 验证结果
+     */
+    static validateLunarDateString(lunarDateStr) {
+        if (typeof lunarDateStr !== 'string') {
+            return { isValid: false, error: '农历日期必须是字符串类型' };
+        }
+        if (!lunarDateStr.trim()) {
+            return { isValid: false, error: '农历日期不能为空' };
+        }
+        // 检查农历日期格式
+        const lunarPattern = /农历\d{4}年(闰?)[正一二三四五六七八九十冬腊]+月[初一二三四五六七八九十廿]+/;
+        if (!lunarPattern.test(lunarDateStr)) {
+            return { isValid: false, error: '农历日期格式无效，如：农历2025年正月初一' };
+        }
+        return { isValid: true };
+    }
+    /**
+     * 验证节日名称
+     * @param festivalName 节日名称
+     * @returns 验证结果
+     */
+    static validateFestivalName(festivalName) {
+        if (typeof festivalName !== 'string') {
+            return { isValid: false, error: '节日名称必须是字符串类型' };
+        }
+        if (!festivalName.trim()) {
+            return { isValid: false, error: '节日名称不能为空' };
+        }
+        // 支持的主要节日名称
+        const validFestivals = [
+            '春节', '元宵节', '清明节', '端午节', '七夕节', '中秋节', '重阳节',
+            '除夕', '元旦', '劳动节', '国庆节', '儿童节', '妇女节', '教师节',
+            '情人节', '圣诞节', '万圣节', '感恩节'
+        ];
+        if (!validFestivals.some(festival => festivalName.includes(festival) || festival.includes(festivalName))) {
+            return { isValid: false, error: '不支持的节日名称' };
+        }
+        return { isValid: true };
+    }
+    /**
+     * 验证节气名称
+     * @param termName 节气名称
+     * @returns 验证结果
+     */
+    static validateSolarTermName(termName) {
+        if (typeof termName !== 'string') {
+            return { isValid: false, error: '节气名称必须是字符串类型' };
+        }
+        if (!termName.trim()) {
+            return { isValid: false, error: '节气名称不能为空' };
+        }
+        // 24节气名称
+        const validTerms = [
+            '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
+            '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
+            '立秋', '处暑', '白露', '秋分', '寒露', '霜降',
+            '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'
+        ];
+        if (!validTerms.includes(termName)) {
+            return { isValid: false, error: '不支持的节气名称' };
         }
         return { isValid: true };
     }

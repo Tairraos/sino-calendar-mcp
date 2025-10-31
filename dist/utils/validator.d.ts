@@ -57,4 +57,43 @@ export declare class Validator {
         isValid: boolean;
         error?: string;
     };
+    /**
+     * 验证反向查询参数
+     * @param args 参数对象
+     * @returns 验证结果
+     */
+    private static validateReverseQueryByNameArgs;
+    /**
+     * 验证日期范围条件查询参数
+     * @param args 参数对象
+     * @returns 验证结果
+     */
+    private static validateQueryByDateRangeArgs;
+    /**
+     * 验证农历日期字符串
+     * @param lunarDateStr 农历日期字符串
+     * @returns 验证结果
+     */
+    static validateLunarDateString(lunarDateStr: any): {
+        isValid: boolean;
+        error?: string;
+    };
+    /**
+     * 验证节日名称
+     * @param festivalName 节日名称
+     * @returns 验证结果
+     */
+    static validateFestivalName(festivalName: any): {
+        isValid: boolean;
+        error?: string;
+    };
+    /**
+     * 验证节气名称
+     * @param termName 节气名称
+     * @returns 验证结果
+     */
+    static validateSolarTermName(termName: any): {
+        isValid: boolean;
+        error?: string;
+    };
 }

@@ -3,6 +3,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema, } from '@modelcontextprotocol/sdk/types.js';
 import { DateInfoEngine } from './engines/dateInfoEngine.js';
+import { ReverseQueryEngine } from './engines/reverseQueryEngine.js';
 import { DateUtils } from './utils/dateUtils.js';
 import { Validator } from './utils/validator.js';
 import { DateParseError, ErrorHandler, ValidationError } from './utils/errorHandler.js';
@@ -66,6 +67,56 @@ class SinoCalendarMCPServer {
                             required: ['startDate', 'endDate'],
                         },
                     },
+                    {
+                        name: 'reverse_query_by_name',
+                        description: '通过农历日期、节日名称、节气名称反向查询公历日期',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                query: {
+                                    type: 'string',
+                                    description: '查询内容：农历日期（如：农历2025年正月初一）、节日名称（如：春节）、节气名称（如：立春）',
+                                },
+                                type: {
+                                    type: 'string',
+                                    description: '查询类型：lunar（农历）| festival（节日）| solar_term（节气）',
+                                    enum: ['lunar', 'festival', 'solar_term'],
+                                },
+                                year: {
+                                    type: 'number',
+                                    description: '指定查询年份（可选，不指定则查询前后5年）',
+                                    minimum: 1900,
+                                    maximum: 2100,
+                                },
+                            },
+                            required: ['query', 'type'],
+                        },
+                    },
+                    {
+                        name: 'query_by_date_range',
+                        description: '在指定日期范围内查询符合条件的日期（休息日、工作日、节日、节气）',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                startDate: {
+                                    type: 'string',
+                                    description: '开始日期，格式为YYYY-MM-DD',
+                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                                },
+                                endDate: {
+                                    type: 'string',
+                                    description: '结束日期，格式为YYYY-MM-DD',
+                                    pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+                                },
+                                type: {
+                                    type: 'string',
+                                    description: '查询类型：rest_days（休息日）| work_days（工作日）| festivals（节日）| solar_terms（节气）',
+                                    enum: ['rest_days', 'work_days', 'festivals', 'solar_terms'],
+                                },
+                            },
+                            required: ['startDate', 'endDate', 'type'],
+                        },
+                    },
                 ],
             };
         });
@@ -85,6 +136,10 @@ class SinoCalendarMCPServer {
                         return await this.handleGetDateInfo(args);
                     case 'get_date_range_info':
                         return await this.handleGetDateRangeInfo(args);
+                    case 'reverse_query_by_name':
+                        return await this.handleReverseQueryByName(args);
+                    case 'query_by_date_range':
+                        return await this.handleQueryByDateRange(args);
                     default:
                         throw new ValidationError(`未知的工具: ${name}`);
                 }
@@ -122,6 +177,61 @@ class SinoCalendarMCPServer {
         // 记录成功操作
         ErrorHandler.logOperation('get_date_range_info', args, { count: rangeInfo.dates.length });
         return ErrorHandler.createSuccessResponse(rangeInfo);
+    }
+    /**
+     * 处理反向查询请求
+     */
+    async handleReverseQueryByName(args) {
+        const { query, type, year } = args;
+        // 确定年份范围
+        let yearRange;
+        if (year) {
+            yearRange = [year];
+        }
+        else {
+            const currentYear = new Date().getFullYear();
+            yearRange = [];
+            for (let i = -5; i <= 5; i++) {
+                yearRange.push(currentYear + i);
+            }
+        }
+        let results = [];
+        try {
+            switch (type) {
+                case 'lunar':
+                    results = ReverseQueryEngine.queryLunarDate(query, yearRange);
+                    break;
+                case 'festival':
+                    results = ReverseQueryEngine.queryFestival(query, yearRange);
+                    break;
+                case 'solar_term':
+                    results = ReverseQueryEngine.querySolarTerm(query, yearRange);
+                    break;
+                default:
+                    throw new ValidationError(`不支持的查询类型: ${type}`);
+            }
+            // 记录成功操作
+            ErrorHandler.logOperation('reverse_query_by_name', args, { count: results.length });
+            return ErrorHandler.createSuccessResponse({ dates: results });
+        }
+        catch (error) {
+            throw new ValidationError(`反向查询失败: ${error instanceof Error ? error.message : '未知错误'}`);
+        }
+    }
+    /**
+     * 处理日期范围条件查询请求
+     */
+    async handleQueryByDateRange(args) {
+        const { startDate, endDate, type } = args;
+        try {
+            const results = ReverseQueryEngine.queryByDateRange(startDate, endDate, type);
+            // 记录成功操作
+            ErrorHandler.logOperation('query_by_date_range', args, { count: results.length });
+            return ErrorHandler.createSuccessResponse({ dates: results });
+        }
+        catch (error) {
+            throw new ValidationError(`日期范围查询失败: ${error instanceof Error ? error.message : '未知错误'}`);
+        }
     }
     /**
      * 设置错误处理

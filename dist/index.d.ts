@@ -18,6 +18,14 @@ declare class SinoCalendarMCPServer {
      */
     private handleGetDateRangeInfo;
     /**
+     * 处理反向查询请求
+     */
+    private handleReverseQueryByName;
+    /**
+     * 处理日期范围条件查询请求
+     */
+    private handleQueryByDateRange;
+    /**
      * 设置错误处理
      */
     private setupErrorHandling;
