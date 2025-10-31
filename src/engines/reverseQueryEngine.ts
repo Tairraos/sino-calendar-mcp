@@ -8,7 +8,6 @@ import { DateInfoEngine } from './dateInfoEngine.js';
 import { LunarEngine } from './lunarEngine.js';
 import { FestivalEngine } from './festivalEngine.js';
 import { SolarTermEngine } from './solarTermEngine.js';
-import { WorkdayEngine } from './workdayEngine.js';
 import { DateUtils } from '../utils/dateUtils.js';
 
 export class ReverseQueryEngine {
@@ -20,7 +19,7 @@ export class ReverseQueryEngine {
    */
   static queryLunarDate(lunarDate: string, yearRange: number[]): DateInfo[] {
     const results: DateInfo[] = [];
-    
+
     // 解析农历日期字符串
     const parsedLunar = this.parseLunarDateString(lunarDate);
     if (!parsedLunar) {
@@ -34,9 +33,9 @@ export class ReverseQueryEngine {
         parsedLunar.month,
         parsedLunar.day,
         year,
-        parsedLunar.isLeap
+        parsedLunar.isLeap,
       );
-      
+
       // 获取每个匹配日期的详细信息
       for (const solarDate of solarDates) {
         const date = new Date(solarDate);
@@ -56,12 +55,12 @@ export class ReverseQueryEngine {
    */
   static queryFestival(festivalName: string, yearRange: number[]): DateInfo[] {
     const results: DateInfo[] = [];
-    
+
     // 查找匹配的 festivals
     for (const year of yearRange) {
       // 获取该年份的所有节日
       const yearFestivals = this.getYearFestivals(year);
-      
+
       for (const festival of yearFestivals) {
         if (festival.name.includes(festivalName) || festivalName.includes(festival.name)) {
           const date = new Date(festival.date);
@@ -82,7 +81,7 @@ export class ReverseQueryEngine {
    */
   static querySolarTerm(termName: string, yearRange: number[]): DateInfo[] {
     const results: DateInfo[] = [];
-    
+
     // 获取节气索引映射
     const termIndex = this.getSolarTermIndex(termName);
     if (termIndex === -1) {
@@ -92,7 +91,7 @@ export class ReverseQueryEngine {
     // 遍历年份范围，查找匹配的节气日期
     for (const year of yearRange) {
       const solarTerms = SolarTermEngine.getYearSolarTerms(year);
-      
+
       for (const [name, date] of solarTerms) {
         if (name === termName) {
           const dateInfo = DateInfoEngine.getDateInfo(date);
@@ -115,38 +114,38 @@ export class ReverseQueryEngine {
     const results: DateInfo[] = [];
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     // 生成日期范围
     const dates = DateUtils.generateDateRange(start, end);
-    
+
     // 确保 dates 是数组
     if (!Array.isArray(dates)) {
       return results;
     }
-    
+
     // 根据类型筛选日期
     for (const date of dates) {
       const dateInfo = DateInfoEngine.getDateInfo(date);
-      
+
       switch (type) {
         case 'rest_days':
           if (this.isRestDay(dateInfo)) {
             results.push(dateInfo);
           }
           break;
-          
+
         case 'work_days':
           if (this.isWorkDay(dateInfo)) {
             results.push(dateInfo);
           }
           break;
-          
+
         case 'festivals':
           if (dateInfo.festival) {
             results.push(dateInfo);
           }
           break;
-          
+
         case 'solar_terms':
           if (dateInfo.solarTerm) {
             results.push(dateInfo);
@@ -168,12 +167,12 @@ export class ReverseQueryEngine {
     if (dateInfo.dayType === '周末') {
       return true;
     }
-    
+
     // 节假日是休息日（需要排除调休的工作日）
     if (dateInfo.dayType === '节假日' && dateInfo.adjusted !== '调休工作日') {
       return true;
     }
-    
+
     return false;
   }
 
@@ -187,12 +186,12 @@ export class ReverseQueryEngine {
     if (dateInfo.dayType === '工作日') {
       return true;
     }
-    
+
     // 调休的工作日（周末但需要上班）
     if (dateInfo.adjusted === '调休工作日') {
       return true;
     }
-    
+
     return false;
   }
 
@@ -208,9 +207,10 @@ export class ReverseQueryEngine {
     isLeap: boolean;
   } | null {
     // 匹配农历日期格式：农历YYYY年MM月DD日
-    const pattern = /农历(\d{4})年(闰?)([正一二三四五六七八九十冬腊]+)月([初一二三四五六七八九十廿]+)/;
+    const pattern =
+      /农历(\d{4})年(闰?)([正一二三四五六七八九十冬腊]+)月([初一二三四五六七八九十廿]+)/;
     const match = lunarDateStr.match(pattern);
-    
+
     if (!match) {
       return null;
     }
@@ -222,19 +222,53 @@ export class ReverseQueryEngine {
 
     // 转换月份
     const monthMap: { [key: string]: number } = {
-      '正': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
-      '七': 7, '八': 8, '九': 9, '十': 10, '冬': 11, '腊': 12
+      正: 1,
+      二: 2,
+      三: 3,
+      四: 4,
+      五: 5,
+      六: 6,
+      七: 7,
+      八: 8,
+      九: 9,
+      十: 10,
+      冬: 11,
+      腊: 12,
     };
     const month = monthMap[monthStr];
 
     // 转换日期
     const dayMap: { [key: string]: number } = {
-      '初一': 1, '初二': 2, '初三': 3, '初四': 4, '初五': 5,
-      '初六': 6, '初七': 7, '初八': 8, '初九': 9, '初十': 10,
-      '十一': 11, '十二': 12, '十三': 13, '十四': 14, '十五': 15,
-      '十六': 16, '十七': 17, '十八': 18, '十九': 19, '二十': 20,
-      '廿一': 21, '廿二': 22, '廿三': 23, '廿四': 24, '廿五': 25,
-      '廿六': 26, '廿七': 27, '廿八': 28, '廿九': 29, '三十': 30
+      初一: 1,
+      初二: 2,
+      初三: 3,
+      初四: 4,
+      初五: 5,
+      初六: 6,
+      初七: 7,
+      初八: 8,
+      初九: 9,
+      初十: 10,
+      十一: 11,
+      十二: 12,
+      十三: 13,
+      十四: 14,
+      十五: 15,
+      十六: 16,
+      十七: 17,
+      十八: 18,
+      十九: 19,
+      二十: 20,
+      廿一: 21,
+      廿二: 22,
+      廿三: 23,
+      廿四: 24,
+      廿五: 25,
+      廿六: 26,
+      廿七: 27,
+      廿八: 28,
+      廿九: 29,
+      三十: 30,
     };
     const day = dayMap[dayStr] || parseInt(dayStr.replace(/[初廿]/g, ''));
 
@@ -255,26 +289,28 @@ export class ReverseQueryEngine {
     lunarMonth: number,
     lunarDay: number,
     targetYear: number,
-    isLeap: boolean
+    isLeap: boolean,
   ): string[] {
     const results: string[] = [];
-    
+
     // 遍历目标年份的每一天，查找匹配的农历日期
     for (let month = 0; month < 12; month++) {
       for (let day = 1; day <= 31; day++) {
         try {
           const solarDate = new Date(targetYear, month, day);
-          
+
           // 检查日期是否有效
-          if (solarDate.getFullYear() !== targetYear || 
-              solarDate.getMonth() !== month || 
-              solarDate.getDate() !== day) {
+          if (
+            solarDate.getFullYear() !== targetYear ||
+            solarDate.getMonth() !== month ||
+            solarDate.getDate() !== day
+          ) {
             continue;
           }
-          
+
           // 转换为农历并比较
           const lunarDateStr = LunarEngine.convertToLunar(solarDate);
-          
+
           // 解析农历日期字符串来获取月份和日期
           const lunarInfo = this.parseLunarDateString(lunarDateStr);
           if (lunarInfo && lunarInfo.month === lunarMonth && lunarInfo.day === lunarDay) {
@@ -294,7 +330,7 @@ export class ReverseQueryEngine {
         }
       }
     }
-    
+
     return results;
   }
 
@@ -305,25 +341,23 @@ export class ReverseQueryEngine {
    */
   private static getYearFestivals(year: number): { name: string; date: string }[] {
     const festivals: { name: string; date: string }[] = [];
-    
+
     // 遍历该年的每一天，收集节日信息
     for (let month = 0; month < 12; month++) {
       for (let day = 1; day <= 31; day++) {
         try {
           const date = new Date(year, month, day);
-          
+
           // 检查日期是否有效
-          if (date.getFullYear() !== year || 
-              date.getMonth() !== month || 
-              date.getDate() !== day) {
+          if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
             continue;
           }
-          
+
           const festival = FestivalEngine.getFestival(date);
           if (festival) {
             festivals.push({
               name: festival,
-              date: DateUtils.formatDateString(date)
+              date: DateUtils.formatDateString(date),
             });
           }
         } catch (error) {
@@ -332,7 +366,7 @@ export class ReverseQueryEngine {
         }
       }
     }
-    
+
     return festivals;
   }
 
@@ -343,12 +377,32 @@ export class ReverseQueryEngine {
    */
   private static getSolarTermIndex(termName: string): number {
     const solarTerms = [
-      '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
-      '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
-      '立秋', '处暑', '白露', '秋分', '寒露', '霜降',
-      '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'
+      '立春',
+      '雨水',
+      '惊蛰',
+      '春分',
+      '清明',
+      '谷雨',
+      '立夏',
+      '小满',
+      '芒种',
+      '夏至',
+      '小暑',
+      '大暑',
+      '立秋',
+      '处暑',
+      '白露',
+      '秋分',
+      '寒露',
+      '霜降',
+      '立冬',
+      '小雪',
+      '大雪',
+      '冬至',
+      '小寒',
+      '大寒',
     ];
-    
+
     return solarTerms.indexOf(termName);
   }
 }

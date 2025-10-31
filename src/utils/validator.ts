@@ -245,7 +245,10 @@ export class Validator {
     // 验证查询类型
     const validTypes = ['rest_days', 'work_days', 'festivals', 'solar_terms'];
     if (!validTypes.includes(args.type)) {
-      return { isValid: false, error: '查询类型必须是: rest_days, work_days, festivals, solar_terms 之一' };
+      return {
+        isValid: false,
+        error: '查询类型必须是: rest_days, work_days, festivals, solar_terms 之一',
+      };
     }
 
     return { isValid: true };
@@ -266,7 +269,8 @@ export class Validator {
     }
 
     // 检查农历日期格式
-    const lunarPattern = /农历\d{4}年(闰?)[正一二三四五六七八九十冬腊]+月[初一二三四五六七八九十廿]+/;
+    const lunarPattern =
+      /农历\d{4}年(闰?)[正一二三四五六七八九十冬腊]+月[初一二三四五六七八九十廿]+/;
     if (!lunarPattern.test(lunarDateStr)) {
       return { isValid: false, error: '农历日期格式无效，如：农历2025年正月初一' };
     }
@@ -290,12 +294,31 @@ export class Validator {
 
     // 支持的主要节日名称
     const validFestivals = [
-      '春节', '元宵节', '清明节', '端午节', '七夕节', '中秋节', '重阳节',
-      '除夕', '元旦', '劳动节', '国庆节', '儿童节', '妇女节', '教师节',
-      '情人节', '圣诞节', '万圣节', '感恩节'
+      '春节',
+      '元宵节',
+      '清明节',
+      '端午节',
+      '七夕节',
+      '中秋节',
+      '重阳节',
+      '除夕',
+      '元旦',
+      '劳动节',
+      '国庆节',
+      '儿童节',
+      '妇女节',
+      '教师节',
+      '情人节',
+      '圣诞节',
+      '万圣节',
+      '感恩节',
     ];
 
-    if (!validFestivals.some(festival => festivalName.includes(festival) || festival.includes(festivalName))) {
+    if (
+      !validFestivals.some(
+        festival => festivalName.includes(festival) || festival.includes(festivalName),
+      )
+    ) {
       return { isValid: false, error: '不支持的节日名称' };
     }
 
@@ -318,10 +341,30 @@ export class Validator {
 
     // 24节气名称
     const validTerms = [
-      '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
-      '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
-      '立秋', '处暑', '白露', '秋分', '寒露', '霜降',
-      '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'
+      '立春',
+      '雨水',
+      '惊蛰',
+      '春分',
+      '清明',
+      '谷雨',
+      '立夏',
+      '小满',
+      '芒种',
+      '夏至',
+      '小暑',
+      '大暑',
+      '立秋',
+      '处暑',
+      '白露',
+      '秋分',
+      '寒露',
+      '霜降',
+      '立冬',
+      '小雪',
+      '大雪',
+      '冬至',
+      '小寒',
+      '大寒',
     ];
 
     if (!validTerms.includes(termName)) {
