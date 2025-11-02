@@ -249,6 +249,47 @@ describe('ReverseQueryEngine', () => {
       (ReverseQueryEngine as any).findSolarDatesForLunar = originalFindSolarDatesForLunar;
     });
 
+    it('应该测试 parseLunarDateString 方法的后备日期解析逻辑', () => {
+      // 直接测试 parseLunarDateString 方法，使用不在 dayMap 中的日期字符串
+      // 这将触发第285行的 parseInt(dayStr.replace(/[初廿]/g, '')) 逻辑
+      
+      // 测试包含"初"字符但不在 dayMap 中的日期 - 使用"初廿"组合
+      const result1 = (ReverseQueryEngine as any).parseLunarDateString('农历2024年正月初廿');
+      expect(result1).toEqual({
+        year: 2024,
+        month: 1,
+        day: NaN, // parseInt('初廿'.replace(/[初廿]/g, '')) = parseInt('') = NaN
+        isLeap: false
+      });
+
+      // 测试包含"廿初"字符但不在 dayMap 中的日期
+      const result2 = (ReverseQueryEngine as any).parseLunarDateString('农历2024年正月廿初');
+      expect(result2).toEqual({
+        year: 2024,
+        month: 1,
+        day: NaN, // parseInt('廿初'.replace(/[初廿]/g, '')) = parseInt('') = NaN
+        isLeap: false
+      });
+
+      // 测试包含"初"和其他字符的组合，但不在 dayMap 中
+      const result3 = (ReverseQueryEngine as any).parseLunarDateString('农历2024年正月初初');
+      expect(result3).toEqual({
+        year: 2024,
+        month: 1,
+        day: NaN, // parseInt('初初'.replace(/[初廿]/g, '')) = parseInt('') = NaN
+        isLeap: false
+      });
+
+      // 测试包含"廿"和其他字符的组合，但不在 dayMap 中
+      const result4 = (ReverseQueryEngine as any).parseLunarDateString('农历2024年正月廿廿');
+      expect(result4).toEqual({
+        year: 2024,
+        month: 1,
+        day: NaN, // parseInt('廿廿'.replace(/[初廿]/g, '')) = parseInt('') = NaN
+        isLeap: false
+      });
+    });
+
     it('应该正确匹配节日名称', () => {
       // Mock getYearFestivals 返回节日数据
       const originalGetYearFestivals = (ReverseQueryEngine as any).getYearFestivals;
