@@ -16,6 +16,7 @@ module.exports = {
   rules: {
     // TypeScript specific rules (basic ones only)
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': 'off', // 禁用基础规则，使用 TypeScript 版本
 
     // General ESLint rules
     'no-console': 'off', // Allow console.log for MCP server

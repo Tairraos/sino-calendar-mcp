@@ -11,11 +11,14 @@ jest.mock('../../../src/engines/lunarEngine.js');
 jest.mock('../../../src/engines/festivalEngine.js');
 jest.mock('../../../src/engines/solarTermEngine.js', () => ({
   SolarTermEngine: {
-    getYearSolarTerms: jest.fn(() => [
-      ['立春', new Date('2025-02-04')],
-      ['雨水', new Date('2025-02-19')],
-      ['惊蛰', new Date('2025-03-06')],
-    ]),
+    getYearSolarTerms: jest.fn(
+      () =>
+        new Map([
+          ['立春', new Date('2025-02-04')],
+          ['雨水', new Date('2025-02-19')],
+          ['惊蛰', new Date('2025-03-06')],
+        ]),
+    ),
   },
 }));
 jest.mock('../../../src/engines/workdayEngine.js');
@@ -24,7 +27,7 @@ jest.mock('../../../src/utils/dateUtils.js');
 describe('ReverseQueryEngine', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock DateInfoEngine.getDateInfo
     (DateInfoEngine.getDateInfo as jest.Mock).mockImplementation((date: Date) => ({
       date: `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
@@ -44,16 +47,22 @@ describe('ReverseQueryEngine', () => {
 
     it('应该正确处理 queryLunarDate 返回多个日期的情况', () => {
       // Mock findSolarDatesForLunar 返回多个日期
-      const mockFindSolarDatesForLunar = jest.spyOn(ReverseQueryEngine as any, 'findSolarDatesForLunar');
+      const mockFindSolarDatesForLunar = jest.spyOn(
+        ReverseQueryEngine as any,
+        'findSolarDatesForLunar',
+      );
       mockFindSolarDatesForLunar.mockReturnValue(['2025-02-01', '2025-02-15', '2025-02-28']);
 
       // Mock parseLunarDateString
-      const mockParseLunarDateString = jest.spyOn(ReverseQueryEngine as any, 'parseLunarDateString');
+      const mockParseLunarDateString = jest.spyOn(
+        ReverseQueryEngine as any,
+        'parseLunarDateString',
+      );
       mockParseLunarDateString.mockReturnValue({
         year: 0,
         month: 1,
         day: 1,
-        isLeap: false
+        isLeap: false,
       });
 
       // Mock DateInfoEngine.getDateInfo 为每个日期返回不同的信息
@@ -67,11 +76,11 @@ describe('ReverseQueryEngine', () => {
       }));
 
       const result = ReverseQueryEngine.queryLunarDate('正月初一', [2025]);
-      
+
       // 验证返回了3个结果（对应3个日期）
       expect(result).toHaveLength(3);
       expect(DateInfoEngine.getDateInfo).toHaveBeenCalledTimes(3);
-      
+
       // 验证每个日期都被正确处理
       expect(DateInfoEngine.getDateInfo).toHaveBeenCalledWith(new Date('2025-02-01'));
       expect(DateInfoEngine.getDateInfo).toHaveBeenCalledWith(new Date('2025-02-15'));
@@ -84,7 +93,7 @@ describe('ReverseQueryEngine', () => {
     it('应该正确查询节日', () => {
       // Mock FestivalEngine.getFestival
       (FestivalEngine.getFestival as jest.Mock).mockReturnValue('春节');
-      
+
       const result = ReverseQueryEngine.queryFestival('春节', [2025]);
       expect(result).toBeInstanceOf(Array);
     });
@@ -114,7 +123,7 @@ describe('ReverseQueryEngine', () => {
     it('应该处理无效节日名称', () => {
       // Mock FestivalEngine.getFestival 返回 null
       (FestivalEngine.getFestival as jest.Mock).mockReturnValue(null);
-      
+
       const result = ReverseQueryEngine.queryFestival('不存在的节日', [2025]);
       expect(result).toBeInstanceOf(Array);
     });
@@ -140,7 +149,11 @@ describe('ReverseQueryEngine', () => {
     });
 
     it('应该处理无效的查询类型', () => {
-      const result = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-03', 'invalid_type');
+      const result = ReverseQueryEngine.queryByDateRange(
+        '2025-01-01',
+        '2025-01-03',
+        'invalid_type',
+      );
       expect(result).toEqual([]);
     });
 
@@ -156,12 +169,14 @@ describe('ReverseQueryEngine', () => {
 
       // Mock parseLunarDateString 返回闰月解析结果
       const originalParseLunarDateString = (ReverseQueryEngine as any).parseLunarDateString;
-      (ReverseQueryEngine as any).parseLunarDateString = jest.fn().mockImplementation((lunarStr: string) => {
-        if (lunarStr.includes('闰五月初一')) {
-          return { year: 2024, month: 5, day: 1, isLeap: true };
-        }
-        return { year: 2024, month: 5, day: 1, isLeap: false };
-      });
+      (ReverseQueryEngine as any).parseLunarDateString = jest
+        .fn()
+        .mockImplementation((lunarStr: string) => {
+          if (lunarStr.includes('闰五月初一')) {
+            return { year: 2024, month: 5, day: 1, isLeap: true };
+          }
+          return { year: 2024, month: 5, day: 1, isLeap: false };
+        });
 
       // Mock DateUtils.formatDateString
       (DateUtils.formatDateString as jest.Mock).mockImplementation((date: Date) => {
@@ -178,14 +193,17 @@ describe('ReverseQueryEngine', () => {
 
     it('应该正确处理非闰月情况', () => {
       // Mock LunarEngine.convertToLunar 返回非闰月信息
-      (LunarEngine.convertToLunar as jest.Mock).mockImplementation((date: Date) => {
+      (LunarEngine.convertToLunar as jest.Mock).mockImplementation((_date: Date) => {
         return '农历2024年五月初一';
       });
 
       // Mock parseLunarDateString 返回非闰月解析结果
       const originalParseLunarDateString = (ReverseQueryEngine as any).parseLunarDateString;
       (ReverseQueryEngine as any).parseLunarDateString = jest.fn().mockReturnValue({
-        year: 2024, month: 5, day: 1, isLeap: false
+        year: 2024,
+        month: 5,
+        day: 1,
+        isLeap: false,
       });
 
       // Mock DateUtils.formatDateString
@@ -212,8 +230,6 @@ describe('ReverseQueryEngine', () => {
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(0);
     });
-
-
   });
 
   describe('queryLunarDate 详细测试', () => {
@@ -224,12 +240,14 @@ describe('ReverseQueryEngine', () => {
         year: 2024,
         month: 1,
         day: 1,
-        isLeap: false
+        isLeap: false,
       });
 
       // Mock findSolarDatesForLunar 返回有效日期
       const originalFindSolarDatesForLunar = (ReverseQueryEngine as any).findSolarDatesForLunar;
-      (ReverseQueryEngine as any).findSolarDatesForLunar = jest.fn().mockReturnValue(['2024-02-10']);
+      (ReverseQueryEngine as any).findSolarDatesForLunar = jest
+        .fn()
+        .mockReturnValue(['2024-02-10']);
 
       // Mock DateInfoEngine.getDateInfo
       (DateInfoEngine.getDateInfo as jest.Mock).mockReturnValue({
@@ -252,14 +270,14 @@ describe('ReverseQueryEngine', () => {
     it('应该测试 parseLunarDateString 方法的后备日期解析逻辑', () => {
       // 直接测试 parseLunarDateString 方法，使用不在 dayMap 中的日期字符串
       // 这将触发第285行的 parseInt(dayStr.replace(/[初廿]/g, '')) 逻辑
-      
+
       // 测试包含"初"字符但不在 dayMap 中的日期 - 使用"初廿"组合
       const result1 = (ReverseQueryEngine as any).parseLunarDateString('农历2024年正月初廿');
       expect(result1).toEqual({
         year: 2024,
         month: 1,
         day: NaN, // parseInt('初廿'.replace(/[初廿]/g, '')) = parseInt('') = NaN
-        isLeap: false
+        isLeap: false,
       });
 
       // 测试包含"廿初"字符但不在 dayMap 中的日期
@@ -268,7 +286,7 @@ describe('ReverseQueryEngine', () => {
         year: 2024,
         month: 1,
         day: NaN, // parseInt('廿初'.replace(/[初廿]/g, '')) = parseInt('') = NaN
-        isLeap: false
+        isLeap: false,
       });
 
       // 测试包含"初"和其他字符的组合，但不在 dayMap 中
@@ -277,7 +295,7 @@ describe('ReverseQueryEngine', () => {
         year: 2024,
         month: 1,
         day: NaN, // parseInt('初初'.replace(/[初廿]/g, '')) = parseInt('') = NaN
-        isLeap: false
+        isLeap: false,
       });
 
       // 测试包含"廿"和其他字符的组合，但不在 dayMap 中
@@ -286,7 +304,7 @@ describe('ReverseQueryEngine', () => {
         year: 2024,
         month: 1,
         day: NaN, // parseInt('廿廿'.replace(/[初廿]/g, '')) = parseInt('') = NaN
-        isLeap: false
+        isLeap: false,
       });
     });
 
@@ -308,9 +326,9 @@ describe('ReverseQueryEngine', () => {
 
     it('应该处理部分匹配的节日名称', () => {
       const originalGetYearFestivals = (ReverseQueryEngine as any).getYearFestivals;
-      (ReverseQueryEngine as any).getYearFestivals = jest.fn().mockReturnValue([
-        { name: '中秋节', date: '2025-09-07' },
-      ]);
+      (ReverseQueryEngine as any).getYearFestivals = jest
+        .fn()
+        .mockReturnValue([{ name: '中秋节', date: '2025-09-07' }]);
 
       const result = ReverseQueryEngine.queryFestival('中秋', [2025]);
       expect(result).toBeInstanceOf(Array);
@@ -333,11 +351,9 @@ describe('ReverseQueryEngine', () => {
     beforeEach(() => {
       // Mock DateUtils.generateDateRange
       const mockDateUtils = require('../../../src/utils/dateUtils.js');
-      mockDateUtils.DateUtils.generateDateRange = jest.fn().mockReturnValue([
-        new Date('2025-01-01'),
-        new Date('2025-01-02'),
-        new Date('2025-01-03'),
-      ]);
+      mockDateUtils.DateUtils.generateDateRange = jest
+        .fn()
+        .mockReturnValue([new Date('2025-01-01'), new Date('2025-01-02'), new Date('2025-01-03')]);
     });
 
     it('应该正确筛选休息日', () => {
@@ -396,7 +412,7 @@ describe('ReverseQueryEngine', () => {
       mockDateUtils.DateUtils.generateDateRange = jest.fn().mockReturnValue(null);
 
       const result = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-03', 'rest_days');
-      
+
       // 应该返回空数组
       expect(result).toEqual([]);
       expect(result).toBeInstanceOf(Array);
@@ -405,12 +421,14 @@ describe('ReverseQueryEngine', () => {
     it('应该正确处理所有类型分支并筛选匹配的日期', () => {
       // 重置 DateUtils.generateDateRange mock
       const mockDateUtils = require('../../../src/utils/dateUtils.js');
-      mockDateUtils.DateUtils.generateDateRange = jest.fn().mockReturnValue([
-        new Date('2025-01-01'),
-        new Date('2025-01-02'),
-        new Date('2025-01-03'),
-        new Date('2025-01-04'),
-      ]);
+      mockDateUtils.DateUtils.generateDateRange = jest
+        .fn()
+        .mockReturnValue([
+          new Date('2025-01-01'),
+          new Date('2025-01-02'),
+          new Date('2025-01-03'),
+          new Date('2025-01-04'),
+        ]);
 
       // Mock DateInfoEngine.getDateInfo 返回不同类型的日期信息
       (DateInfoEngine.getDateInfo as jest.Mock).mockImplementation((date: Date) => {
@@ -426,19 +444,35 @@ describe('ReverseQueryEngine', () => {
       });
 
       // 测试 rest_days 分支
-      const restDaysResult = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-04', 'rest_days');
+      const restDaysResult = ReverseQueryEngine.queryByDateRange(
+        '2025-01-01',
+        '2025-01-04',
+        'rest_days',
+      );
       expect(restDaysResult).toHaveLength(1); // 只有1月1日是休息日
 
       // 测试 work_days 分支
-      const workDaysResult = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-04', 'work_days');
+      const workDaysResult = ReverseQueryEngine.queryByDateRange(
+        '2025-01-01',
+        '2025-01-04',
+        'work_days',
+      );
       expect(workDaysResult).toHaveLength(3); // 1月2日、3日、4日是工作日
 
       // 测试 festivals 分支
-      const festivalsResult = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-04', 'festivals');
+      const festivalsResult = ReverseQueryEngine.queryByDateRange(
+        '2025-01-01',
+        '2025-01-04',
+        'festivals',
+      );
       expect(festivalsResult).toHaveLength(1); // 只有1月2日有节日
 
       // 测试 solar_terms 分支
-      const solarTermsResult = ReverseQueryEngine.queryByDateRange('2025-01-01', '2025-01-04', 'solar_terms');
+      const solarTermsResult = ReverseQueryEngine.queryByDateRange(
+        '2025-01-01',
+        '2025-01-04',
+        'solar_terms',
+      );
       expect(solarTermsResult).toHaveLength(1); // 只有1月3日有节气
     });
   });
@@ -524,7 +558,7 @@ describe('ReverseQueryEngine', () => {
     });
 
     it('应该正确处理非闰月日期', () => {
-      (LunarEngine.convertToLunar as jest.Mock).mockImplementation((date: Date) => {
+      (LunarEngine.convertToLunar as jest.Mock).mockImplementation((_date: Date) => {
         return '甲辰年五月初一';
       });
 
@@ -572,7 +606,7 @@ describe('ReverseQueryEngine', () => {
         year: 2025,
         month: 1,
         day: 1,
-        isLeap: false
+        isLeap: false,
       });
     });
 
@@ -582,7 +616,7 @@ describe('ReverseQueryEngine', () => {
         year: 2025,
         month: 6,
         day: 10,
-        isLeap: true
+        isLeap: true,
       });
     });
 
@@ -610,13 +644,13 @@ describe('ReverseQueryEngine', () => {
       // 测试有效的节气名称
       const springIndex = (ReverseQueryEngine as any).getSolarTermIndex('立春');
       expect(springIndex).toBe(0);
-      
+
       const summerSolsticeIndex = (ReverseQueryEngine as any).getSolarTermIndex('夏至');
       expect(summerSolsticeIndex).toBe(9);
-      
+
       const winterSolsticeIndex = (ReverseQueryEngine as any).getSolarTermIndex('冬至');
       expect(winterSolsticeIndex).toBe(21);
-      
+
       // 测试无效的节气名称
       const invalidIndex = (ReverseQueryEngine as any).getSolarTermIndex('无效节气');
       expect(invalidIndex).toBe(-1);
@@ -635,10 +669,10 @@ describe('ReverseQueryEngine', () => {
       });
 
       const festivals = (ReverseQueryEngine as any).getYearFestivals(2025);
-      
+
       expect(festivals).toBeInstanceOf(Array);
       expect(festivals.length).toBeGreaterThan(0);
-      
+
       // 验证返回的节日格式
       const firstFestival = festivals[0];
       expect(firstFestival).toHaveProperty('name');
@@ -652,11 +686,60 @@ describe('ReverseQueryEngine', () => {
       (FestivalEngine.getFestival as jest.Mock).mockImplementation(() => {
         throw new Error('Test error');
       });
-    
+
       const festivals = (ReverseQueryEngine as any).getYearFestivals(2025);
-      
+
       // 即使有异常，也应该返回数组
       expect(festivals).toBeInstanceOf(Array);
+    });
+  });
+
+  describe('querySolarTerm 排序逻辑测试', () => {
+    it('应该测试第107行的排序函数覆盖率', () => {
+      // 导入 SolarTermEngine mock
+      const { SolarTermEngine } = require('../../../src/engines/solarTermEngine.js');
+
+      // Mock getYearSolarTerms 返回多个相同节气（模拟多年查询）
+      SolarTermEngine.getYearSolarTerms.mockImplementation((year: number) => {
+        if (year === 2024) {
+          return new Map([
+            ['立春', new Date('2024-02-04')],
+            ['雨水', new Date('2024-02-19')],
+          ]);
+        } else if (year === 2025) {
+          return new Map([
+            ['立春', new Date('2025-02-04')],
+            ['雨水', new Date('2025-02-19')],
+          ]);
+        }
+        return new Map();
+      });
+
+      // Mock DateInfoEngine.getDateInfo 返回不同的日期信息
+      (DateInfoEngine.getDateInfo as jest.Mock).mockImplementation((date: Date) => ({
+        date: `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
+        week: '星期一',
+        dayType: '工作日',
+        lunarDate: '农历信息',
+        festival: undefined,
+        solarTerm: '立春',
+      }));
+
+      // Mock getSolarTermIndex 返回有效索引
+      (ReverseQueryEngine as any).getSolarTermIndex = jest.fn().mockReturnValue(0);
+
+      // 查询多年的立春，这会返回多个结果并触发排序
+      const result = ReverseQueryEngine.querySolarTerm('立春', [2025, 2024]); // 故意颠倒顺序
+
+      // 验证返回了2个结果
+      expect(result).toHaveLength(2);
+
+      // 验证结果按日期排序（2024年的立春应该在2025年的立春之前）
+      expect(result[0].date).toBe('2024年2月4日');
+      expect(result[1].date).toBe('2025年2月4日');
+
+      // 验证 DateInfoEngine.getDateInfo 被调用了2次
+      expect(DateInfoEngine.getDateInfo).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -694,13 +777,15 @@ describe('ReverseQueryEngine', () => {
       });
 
       // Mock parseLunarDateString
-      (ReverseQueryEngine as any).parseLunarDateString = jest.fn().mockImplementation((lunarStr: string) => {
-        if (!lunarStr) return null;
-        if (lunarStr.includes('闰五月初一')) {
-          return { year: 2024, month: 5, day: 1, isLeap: true };
-        }
-        return { year: 2024, month: 5, day: 2, isLeap: false };
-      });
+      (ReverseQueryEngine as any).parseLunarDateString = jest
+        .fn()
+        .mockImplementation((lunarStr: string) => {
+          if (!lunarStr) return null;
+          if (lunarStr.includes('闰五月初一')) {
+            return { year: 2024, month: 5, day: 1, isLeap: true };
+          }
+          return { year: 2024, month: 5, day: 2, isLeap: false };
+        });
 
       // 查找闰月，应该只返回闰月日期
       const leapResult = (ReverseQueryEngine as any).findSolarDatesForLunar(2024, 5, 1, 2024, true);
@@ -723,16 +808,24 @@ describe('ReverseQueryEngine', () => {
       });
 
       // Mock parseLunarDateString
-      (ReverseQueryEngine as any).parseLunarDateString = jest.fn().mockImplementation((lunarStr: string) => {
-        if (!lunarStr) return null;
-        if (lunarStr.includes('五月初一')) {
-          return { year: 2024, month: 5, day: 1, isLeap: false };
-        }
-        return { year: 2024, month: 5, day: 2, isLeap: false };
-      });
+      (ReverseQueryEngine as any).parseLunarDateString = jest
+        .fn()
+        .mockImplementation((lunarStr: string) => {
+          if (!lunarStr) return null;
+          if (lunarStr.includes('五月初一')) {
+            return { year: 2024, month: 5, day: 1, isLeap: false };
+          }
+          return { year: 2024, month: 5, day: 2, isLeap: false };
+        });
 
       // 查找非闰月，应该返回匹配的日期
-      const nonLeapResult = (ReverseQueryEngine as any).findSolarDatesForLunar(2024, 5, 1, 2024, false);
+      const nonLeapResult = (ReverseQueryEngine as any).findSolarDatesForLunar(
+        2024,
+        5,
+        1,
+        2024,
+        false,
+      );
       expect(nonLeapResult).toBeInstanceOf(Array);
       expect(nonLeapResult.length).toBeGreaterThan(0);
     });

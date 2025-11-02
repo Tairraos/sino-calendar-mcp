@@ -176,8 +176,24 @@ describe('Validator', () => {
     it('应该验证所有有效的节日名称', () => {
       // 使用实际validator.ts中支持的节日列表
       const validFestivals = [
-        '春节', '元宵节', '清明节', '端午节', '七夕节', '中秋节', '重阳节', '除夕',
-        '元旦', '劳动节', '国庆节', '儿童节', '妇女节', '教师节', '情人节', '圣诞节', '万圣节', '感恩节',
+        '春节',
+        '元宵节',
+        '清明节',
+        '端午节',
+        '七夕节',
+        '中秋节',
+        '重阳节',
+        '除夕',
+        '元旦',
+        '劳动节',
+        '国庆节',
+        '儿童节',
+        '妇女节',
+        '教师节',
+        '情人节',
+        '圣诞节',
+        '万圣节',
+        '感恩节',
       ];
 
       validFestivals.forEach(festival => {
@@ -213,10 +229,30 @@ describe('Validator', () => {
 
     it('应该验证所有有效的节气名称', () => {
       const validSolarTerms = [
-        '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
-        '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
-        '立秋', '处暑', '白露', '秋分', '寒露', '霜降',
-        '立冬', '小雪', '大雪', '冬至', '小寒', '大寒',
+        '立春',
+        '雨水',
+        '惊蛰',
+        '春分',
+        '清明',
+        '谷雨',
+        '立夏',
+        '小满',
+        '芒种',
+        '夏至',
+        '小暑',
+        '大暑',
+        '立秋',
+        '处暑',
+        '白露',
+        '秋分',
+        '寒露',
+        '霜降',
+        '立冬',
+        '小雪',
+        '大雪',
+        '冬至',
+        '小寒',
+        '大寒',
       ];
 
       validSolarTerms.forEach(term => {
@@ -385,7 +421,9 @@ describe('Validator', () => {
           type: 'invalid_type',
         });
         expect(result.isValid).toBe(false);
-        expect(result.error).toContain('查询类型必须是: rest_days, work_days, festivals, solar_terms 之一');
+        expect(result.error).toContain(
+          '查询类型必须是: rest_days, work_days, festivals, solar_terms 之一',
+        );
       });
 
       it('应该拒绝无效的日期范围', () => {
@@ -503,13 +541,13 @@ describe('Validator', () => {
     it('应该覆盖validateDateString的所有分支', () => {
       // 测试非字符串类型
       expect(Validator.validateDateString(123).isValid).toBe(false);
-      
+
       // 测试空字符串
       expect(Validator.validateDateString('').isValid).toBe(false);
-      
+
       // 测试无效日期格式
       expect(Validator.validateDateString('abc').isValid).toBe(false);
-      
+
       // 测试有效日期
       expect(Validator.validateDateString('2025-01-01').isValid).toBe(true);
     });
@@ -517,13 +555,13 @@ describe('Validator', () => {
     it('应该覆盖validateDateRange的所有分支', () => {
       // 测试开始日期无效
       expect(Validator.validateDateRange('invalid', '2025-01-01').isValid).toBe(false);
-      
+
       // 测试结束日期无效
       expect(Validator.validateDateRange('2025-01-01', 'invalid').isValid).toBe(false);
-      
+
       // 测试日期范围无效
       expect(Validator.validateDateRange('2025-01-02', '2025-01-01').isValid).toBe(false);
-      
+
       // 测试有效范围
       expect(Validator.validateDateRange('2025-01-01', '2025-01-02').isValid).toBe(true);
     });
@@ -531,14 +569,14 @@ describe('Validator', () => {
     it('应该覆盖validateYear的所有分支', () => {
       // 测试非数字类型
       expect(Validator.validateYear('2025').isValid).toBe(false);
-      
+
       // 测试非整数
       expect(Validator.validateYear(2025.5).isValid).toBe(false);
-      
+
       // 测试范围外的值
       expect(Validator.validateYear(999).isValid).toBe(false);
       expect(Validator.validateYear(3001).isValid).toBe(false);
-      
+
       // 测试有效年份
       expect(Validator.validateYear(2025).isValid).toBe(true);
     });
@@ -546,14 +584,14 @@ describe('Validator', () => {
     it('应该覆盖validateMonth的所有分支', () => {
       // 测试非数字类型
       expect(Validator.validateMonth('6').isValid).toBe(false);
-      
+
       // 测试非整数
       expect(Validator.validateMonth(6.5).isValid).toBe(false);
-      
+
       // 测试范围外的值
       expect(Validator.validateMonth(0).isValid).toBe(false);
       expect(Validator.validateMonth(13).isValid).toBe(false);
-      
+
       // 测试有效月份
       expect(Validator.validateMonth(6).isValid).toBe(true);
     });
@@ -561,14 +599,14 @@ describe('Validator', () => {
     it('应该覆盖validateLunarDateString的所有分支', () => {
       // 测试非字符串类型
       expect(Validator.validateLunarDateString(123).isValid).toBe(false);
-      
+
       // 测试空字符串
       expect(Validator.validateLunarDateString('').isValid).toBe(false);
       expect(Validator.validateLunarDateString('   ').isValid).toBe(false);
-      
+
       // 测试无效格式
       expect(Validator.validateLunarDateString('无效格式').isValid).toBe(false);
-      
+
       // 测试有效格式
       expect(Validator.validateLunarDateString('农历2025年正月初一').isValid).toBe(true);
     });
@@ -576,14 +614,14 @@ describe('Validator', () => {
     it('应该覆盖validateFestivalName的所有分支', () => {
       // 测试非字符串类型
       expect(Validator.validateFestivalName(123).isValid).toBe(false);
-      
+
       // 测试空字符串
       expect(Validator.validateFestivalName('').isValid).toBe(false);
       expect(Validator.validateFestivalName('   ').isValid).toBe(false);
-      
+
       // 测试不支持的节日
       expect(Validator.validateFestivalName('不存在的节日').isValid).toBe(false);
-      
+
       // 测试有效节日
       expect(Validator.validateFestivalName('春节').isValid).toBe(true);
     });
@@ -591,14 +629,14 @@ describe('Validator', () => {
     it('应该覆盖validateSolarTermName的所有分支', () => {
       // 测试非字符串类型
       expect(Validator.validateSolarTermName(123).isValid).toBe(false);
-      
+
       // 测试空字符串
       expect(Validator.validateSolarTermName('').isValid).toBe(false);
       expect(Validator.validateSolarTermName('   ').isValid).toBe(false);
-      
+
       // 测试不支持的节气
       expect(Validator.validateSolarTermName('不存在的节气').isValid).toBe(false);
-      
+
       // 测试有效节气
       expect(Validator.validateSolarTermName('立春').isValid).toBe(true);
     });
@@ -606,22 +644,30 @@ describe('Validator', () => {
     it('应该覆盖validateToolArgs的所有分支', () => {
       // 测试未知工具
       expect(Validator.validateToolArgs('unknown_tool', {}).isValid).toBe(false);
-      
+
       // 测试各种工具的参数验证
-      expect(Validator.validateToolArgs('get_date_info', { date: '2025-01-01' }).isValid).toBe(true);
-      expect(Validator.validateToolArgs('get_date_range_info', { 
-        startDate: '2025-01-01', 
-        endDate: '2025-01-31',
-      }).isValid).toBe(true);
-      expect(Validator.validateToolArgs('reverse_query_by_name', { 
-        query: '春节', 
-        type: 'festival',
-      }).isValid).toBe(true);
-      expect(Validator.validateToolArgs('query_by_date_range', { 
-        startDate: '2025-01-01', 
-        endDate: '2025-01-31', 
-        type: 'festivals',
-      }).isValid).toBe(true);
+      expect(Validator.validateToolArgs('get_date_info', { date: '2025-01-01' }).isValid).toBe(
+        true,
+      );
+      expect(
+        Validator.validateToolArgs('get_date_range_info', {
+          startDate: '2025-01-01',
+          endDate: '2025-01-31',
+        }).isValid,
+      ).toBe(true);
+      expect(
+        Validator.validateToolArgs('reverse_query_by_name', {
+          query: '春节',
+          type: 'festival',
+        }).isValid,
+      ).toBe(true);
+      expect(
+        Validator.validateToolArgs('query_by_date_range', {
+          startDate: '2025-01-01',
+          endDate: '2025-01-31',
+          type: 'festivals',
+        }).isValid,
+      ).toBe(true);
     });
   });
 });

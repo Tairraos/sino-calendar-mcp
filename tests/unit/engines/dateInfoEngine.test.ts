@@ -15,13 +15,13 @@ jest.mock('../../../src/utils/dateUtils.js');
 describe('DateInfoEngine', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock console.error to avoid noise in test output
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    
+
     // Mock DateUtils methods
-    (DateUtils.formatChineseDate as jest.Mock).mockImplementation((date: Date) => 
-      `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+    (DateUtils.formatChineseDate as jest.Mock).mockImplementation(
+      (date: Date) => `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
     );
     (DateUtils.formatChineseWeek as jest.Mock).mockImplementation(() => '星期三');
     (DateUtils.generateDateRange as jest.Mock).mockImplementation((start: Date, end: Date) => {
@@ -81,7 +81,7 @@ describe('DateInfoEngine', () => {
     it('应该处理SolarTermEngine异常', () => {
       // Mock LunarEngine to return valid data
       (LunarEngine.convertToLunar as jest.Mock).mockReturnValue('农历2025年正月初一');
-      
+
       // Mock SolarTermEngine to throw an error
       (SolarTermEngine.getSolarTerm as jest.Mock).mockImplementation(() => {
         throw new Error('SolarTermEngine error');
@@ -105,10 +105,10 @@ describe('DateInfoEngine', () => {
     it('应该处理FestivalEngine异常', () => {
       // Mock LunarEngine to return valid data
       (LunarEngine.convertToLunar as jest.Mock).mockReturnValue('农历2025年正月初一');
-      
+
       // Mock SolarTermEngine to return valid data
       (SolarTermEngine.getSolarTerm as jest.Mock).mockReturnValue(null);
-      
+
       // Mock FestivalEngine to throw an error
       (FestivalEngine.getFestival as jest.Mock).mockImplementation(() => {
         throw new Error('FestivalEngine error');
@@ -131,13 +131,13 @@ describe('DateInfoEngine', () => {
     it('应该处理WorkdayEngine异常', () => {
       // Mock LunarEngine to return valid data
       (LunarEngine.convertToLunar as jest.Mock).mockReturnValue('农历2025年正月初一');
-      
+
       // Mock SolarTermEngine to return valid data
       (SolarTermEngine.getSolarTerm as jest.Mock).mockReturnValue(null);
-      
+
       // Mock FestivalEngine to return valid data
       (FestivalEngine.getFestival as jest.Mock).mockReturnValue(null);
-      
+
       // Mock WorkdayEngine to throw an error
       (WorkdayEngine.getDayType as jest.Mock).mockImplementation(() => {
         throw new Error('WorkdayEngine error');
@@ -181,14 +181,14 @@ describe('DateInfoEngine', () => {
     it('应该处理DateUtils异常并返回基本信息', () => {
       // First, reset all mocks to ensure clean state
       jest.clearAllMocks();
-      
+
       // Mock DateUtils.formatChineseDate to throw an error to trigger catch block
       (DateUtils.formatChineseDate as jest.Mock)
         .mockImplementationOnce(() => {
           throw new Error('DateUtils error');
         })
-        .mockImplementation((date: Date) => 
-          `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+        .mockImplementation(
+          (date: Date) => `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
         );
 
       // Mock other DateUtils methods to work normally

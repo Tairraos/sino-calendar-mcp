@@ -87,7 +87,8 @@ class SinoCalendarMCPServer {
               properties: {
                 query: {
                   type: 'string',
-                  description: '查询内容：农历日期（如：农历2025年正月初一）、节日名称（如：春节）、节气名称（如：立春）',
+                  description:
+                    '查询内容：农历日期（如：农历2025年正月初一）、节日名称（如：春节）、节气名称（如：立春）',
                 },
                 type: {
                   type: 'string',
@@ -122,7 +123,8 @@ class SinoCalendarMCPServer {
                 },
                 type: {
                   type: 'string',
-                  description: '查询类型：rest_days（休息日）| work_days（工作日）| festivals（节日）| solar_terms（节气）',
+                  description:
+                    '查询类型：rest_days（休息日）| work_days（工作日）| festivals（节日）| solar_terms（节气）',
                   enum: ['rest_days', 'work_days', 'festivals', 'solar_terms'],
                 },
               },
@@ -213,7 +215,7 @@ class SinoCalendarMCPServer {
    */
   private async handleReverseQueryByName(args: any) {
     const { query, type, year } = args;
-    
+
     // 确定年份范围
     let yearRange: number[];
     if (year) {
@@ -248,7 +250,9 @@ class SinoCalendarMCPServer {
 
       return ErrorHandler.createSuccessResponse({ dates: results });
     } catch (error) {
-      throw new ValidationError(`反向查询失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new ValidationError(
+        `反向查询失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      );
     }
   }
 
@@ -266,7 +270,9 @@ class SinoCalendarMCPServer {
 
       return ErrorHandler.createSuccessResponse({ dates: results });
     } catch (error) {
-      throw new ValidationError(`日期范围查询失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new ValidationError(
+        `日期范围查询失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      );
     }
   }
 
