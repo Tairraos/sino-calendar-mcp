@@ -187,136 +187,71 @@ npm run check
 
 ### 反向查询接口
 
-#### query_lunar_date
+#### reverse_query_by_name
 
-根据农历日期查询对应的公历日期。
+通过农历日期、节日名称、节气名称反向查询公历日期。
 
 **参数：**
 
-- `lunarDate` (string): 农历日期，支持多种格式：
-  - 完整格式：`农历2025年正月初一`
-  - 简化格式：`正月初一`
-  - 闰月格式：`闰六月十五`
-- `yearRange` (number[]): 查询的年份范围数组
+- `query` (string): 查询内容，支持多种格式：
+  - 农历日期：`农历2025年正月初一`、`正月初一`、`闰六月十五`
+  - 节日名称：`春节`、`中秋`、`端午节`（支持部分匹配）
+  - 节气名称：`立春`、`冬至`、`春分`
+- `type` (string): 查询类型：
+  - `lunar`: 农历日期查询
+  - `festival`: 节日查询
+  - `solar_term`: 节气查询
+- `year` (number, 可选): 指定查询年份，不指定则查询前后5年
 
-**示例：**
+**农历日期查询示例：**
 
 ```json
 {
-  "name": "query_lunar_date",
+  "name": "reverse_query_by_name",
   "arguments": {
-    "lunarDate": "正月初一",
-    "yearRange": [2024, 2025, 2026]
+    "query": "正月初一",
+    "type": "lunar",
+    "year": 2025
   }
 }
 ```
 
-**返回：**
+**节日查询示例：**
 
 ```json
 {
-  "results": [
-    {
-      "date": "2024年2月10日",
-      "week": "星期六",
-      "dayType": "休息日",
-      "lunarDate": "甲辰年正月初一",
-      "festival": "春节"
-    },
+  "name": "reverse_query_by_name",
+  "arguments": {
+    "query": "中秋",
+    "type": "festival"
+  }
+}
+```
+
+**节气查询示例：**
+
+```json
+{
+  "name": "reverse_query_by_name",
+  "arguments": {
+    "query": "立春",
+    "type": "solar_term",
+    "year": 2025
+  }
+}
+```
+
+**返回格式：**
+
+```json
+{
+  "dates": [
     {
       "date": "2025年1月29日",
       "week": "星期三",
       "dayType": "休息日",
       "lunarDate": "乙巳年正月初一",
       "festival": "春节"
-    }
-  ]
-}
-```
-
-#### query_festival
-
-根据节日名称查询对应的公历日期。
-
-**参数：**
-
-- `festivalName` (string): 节日名称，支持部分匹配
-- `yearRange` (number[]): 查询的年份范围数组
-
-**示例：**
-
-```json
-{
-  "name": "query_festival",
-  "arguments": {
-    "festivalName": "中秋",
-    "yearRange": [2024, 2025]
-  }
-}
-```
-
-**返回：**
-
-```json
-{
-  "results": [
-    {
-      "date": "2024年9月17日",
-      "week": "星期二",
-      "dayType": "休息日",
-      "lunarDate": "甲辰年八月十五",
-      "festival": "中秋节"
-    },
-    {
-      "date": "2025年10月6日",
-      "week": "星期一",
-      "dayType": "休息日",
-      "lunarDate": "乙巳年八月十五",
-      "festival": "中秋节"
-    }
-  ]
-}
-```
-
-#### query_solar_term
-
-根据节气名称查询对应的公历日期。
-
-**参数：**
-
-- `termName` (string): 节气名称（如：立春、冬至）
-- `yearRange` (number[]): 查询的年份范围数组
-
-**示例：**
-
-```json
-{
-  "name": "query_solar_term",
-  "arguments": {
-    "termName": "立春",
-    "yearRange": [2024, 2025]
-  }
-}
-```
-
-**返回：**
-
-```json
-{
-  "results": [
-    {
-      "date": "2024年2月4日",
-      "week": "星期日",
-      "dayType": "周末",
-      "lunarDate": "甲辰年腊月廿五",
-      "solarTerm": "立春"
-    },
-    {
-      "date": "2025年2月3日",
-      "week": "星期一",
-      "dayType": "工作日",
-      "lunarDate": "乙巳年正月初六",
-      "solarTerm": "立春"
     }
   ]
 }

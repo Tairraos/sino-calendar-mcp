@@ -1,6 +1,6 @@
 {
   "name": "sino-calendar-mcp",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "中国农历节日转换MCP服务 - 提供公历日期到中国农历、节日、24节气的智能转换功能",
   "main": "dist/index.js",
   "bin": {
