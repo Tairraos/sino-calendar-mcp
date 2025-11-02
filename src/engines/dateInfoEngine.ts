@@ -16,44 +16,79 @@ export class DateInfoEngine {
    * @returns 日期信息对象
    */
   static getDateInfo(date: Date): DateInfo {
-    // 基础日期信息
-    const dateStr = DateUtils.formatChineseDate(date);
-    const week = DateUtils.formatChineseWeek(date);
+    try {
+      // 基础日期信息
+      const dateStr = DateUtils.formatChineseDate(date);
+      const week = DateUtils.formatChineseWeek(date);
 
-    // 工作日类型和调休信息
-    const workdayInfo = WorkdayEngine.getDayType(date);
+      // 工作日类型和调休信息
+      let workdayInfo;
+      try {
+        workdayInfo = WorkdayEngine.getDayType(date);
+      } catch (error) {
+        console.error('获取工作日信息失败:', error);
+        workdayInfo = { dayType: '工作日' };
+      }
 
-    // 农历信息
-    const lunarDate = LunarEngine.convertToLunar(date);
+      // 农历信息
+      let lunarDate;
+      try {
+        lunarDate = LunarEngine.convertToLunar(date);
+      } catch (error) {
+        console.error('农历转换失败:', error);
+        lunarDate = '农历信息获取失败';
+      }
 
-    // 节日信息
-    const festival = FestivalEngine.getFestival(date);
+      // 节日信息
+      let festival;
+      try {
+        festival = FestivalEngine.getFestival(date);
+      } catch (error) {
+        console.error('获取节日信息失败:', error);
+        festival = undefined;
+      }
 
-    // 24节气信息
-    const solarTerm = SolarTermEngine.getSolarTerm(date);
+      // 24节气信息
+      let solarTerm;
+      try {
+        solarTerm = SolarTermEngine.getSolarTerm(date);
+      } catch (error) {
+        console.error('获取节气信息失败:', error);
+        solarTerm = undefined;
+      }
 
-    // 构建返回对象
-    const dateInfo: DateInfo = {
-      date: dateStr,
-      week: week,
-      dayType: workdayInfo.dayType,
-      lunarDate: lunarDate,
-    };
+      // 构建返回对象
+      const dateInfo: DateInfo = {
+        date: dateStr,
+        week: week,
+        dayType: workdayInfo.dayType,
+        lunarDate: lunarDate,
+      };
 
-    // 添加可选字段
-    if (workdayInfo.adjusted) {
-      dateInfo.adjusted = workdayInfo.adjusted;
+      // 添加可选字段
+      if (workdayInfo.adjusted) {
+        dateInfo.adjusted = workdayInfo.adjusted;
+      }
+
+      if (festival) {
+        dateInfo.festival = festival;
+      }
+
+      if (solarTerm) {
+        dateInfo.solarTerm = solarTerm;
+      }
+
+      return dateInfo;
+    } catch (error) {
+      console.error('获取日期信息失败:', error);
+      // 返回基本信息
+      return {
+        date: DateUtils.formatChineseDate(date),
+        week: DateUtils.formatChineseWeek(date),
+        dayType: '工作日',
+        lunarDate: '农历信息获取失败',
+      };
     }
-
-    if (festival) {
-      dateInfo.festival = festival;
-    }
-
-    if (solarTerm) {
-      dateInfo.solarTerm = solarTerm;
-    }
-
-    return dateInfo;
   }
 
   /**

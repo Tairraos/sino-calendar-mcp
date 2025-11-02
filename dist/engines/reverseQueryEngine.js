@@ -46,7 +46,9 @@ export class ReverseQueryEngine {
             // 获取该年份的所有节日
             const yearFestivals = this.getYearFestivals(year);
             for (const festival of yearFestivals) {
-                if (festival.name.includes(festivalName) || festivalName.includes(festival.name)) {
+                if (festival.name &&
+                    typeof festival.name === 'string' &&
+                    (festival.name.includes(festivalName) || festivalName.includes(festival.name))) {
                     const date = new Date(festival.date);
                     const dateInfo = DateInfoEngine.getDateInfo(date);
                     results.push(dateInfo);
@@ -163,6 +165,10 @@ export class ReverseQueryEngine {
      * @returns 解析结果
      */
     static parseLunarDateString(lunarDateStr) {
+        // 检查输入是否有效
+        if (!lunarDateStr || typeof lunarDateStr !== 'string') {
+            return null;
+        }
         // 匹配农历日期格式：农历YYYY年MM月DD日
         const pattern = /农历(\d{4})年(闰?)([正一二三四五六七八九十冬腊]+)月([初一二三四五六七八九十廿]+)/;
         const match = lunarDateStr.match(pattern);
@@ -175,18 +181,55 @@ export class ReverseQueryEngine {
         const dayStr = match[4];
         // 转换月份
         const monthMap = {
-            '正': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
-            '七': 7, '八': 8, '九': 9, '十': 10, '冬': 11, '腊': 12
+            正: 1,
+            一: 1,
+            二: 2,
+            三: 3,
+            四: 4,
+            五: 5,
+            六: 6,
+            七: 7,
+            八: 8,
+            九: 9,
+            十: 10,
+            十一: 11,
+            十二: 12,
+            冬: 11,
+            腊: 12,
         };
         const month = monthMap[monthStr];
         // 转换日期
         const dayMap = {
-            '初一': 1, '初二': 2, '初三': 3, '初四': 4, '初五': 5,
-            '初六': 6, '初七': 7, '初八': 8, '初九': 9, '初十': 10,
-            '十一': 11, '十二': 12, '十三': 13, '十四': 14, '十五': 15,
-            '十六': 16, '十七': 17, '十八': 18, '十九': 19, '二十': 20,
-            '廿一': 21, '廿二': 22, '廿三': 23, '廿四': 24, '廿五': 25,
-            '廿六': 26, '廿七': 27, '廿八': 28, '廿九': 29, '三十': 30
+            初一: 1,
+            初二: 2,
+            初三: 3,
+            初四: 4,
+            初五: 5,
+            初六: 6,
+            初七: 7,
+            初八: 8,
+            初九: 9,
+            初十: 10,
+            十一: 11,
+            十二: 12,
+            十三: 13,
+            十四: 14,
+            十五: 15,
+            十六: 16,
+            十七: 17,
+            十八: 18,
+            十九: 19,
+            二十: 20,
+            廿一: 21,
+            廿二: 22,
+            廿三: 23,
+            廿四: 24,
+            廿五: 25,
+            廿六: 26,
+            廿七: 27,
+            廿八: 28,
+            廿九: 29,
+            三十: 30,
         };
         const day = dayMap[dayStr] || parseInt(dayStr.replace(/[初廿]/g, ''));
         return { year, month, day, isLeap };
@@ -251,16 +294,14 @@ export class ReverseQueryEngine {
                 try {
                     const date = new Date(year, month, day);
                     // 检查日期是否有效
-                    if (date.getFullYear() !== year ||
-                        date.getMonth() !== month ||
-                        date.getDate() !== day) {
+                    if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
                         continue;
                     }
                     const festival = FestivalEngine.getFestival(date);
                     if (festival) {
                         festivals.push({
                             name: festival,
-                            date: DateUtils.formatDateString(date)
+                            date: DateUtils.formatDateString(date),
                         });
                     }
                 }
@@ -279,10 +320,30 @@ export class ReverseQueryEngine {
      */
     static getSolarTermIndex(termName) {
         const solarTerms = [
-            '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
-            '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
-            '立秋', '处暑', '白露', '秋分', '寒露', '霜降',
-            '立冬', '小雪', '大雪', '冬至', '小寒', '大寒'
+            '立春',
+            '雨水',
+            '惊蛰',
+            '春分',
+            '清明',
+            '谷雨',
+            '立夏',
+            '小满',
+            '芒种',
+            '夏至',
+            '小暑',
+            '大暑',
+            '立秋',
+            '处暑',
+            '白露',
+            '秋分',
+            '寒露',
+            '霜降',
+            '立冬',
+            '小雪',
+            '大雪',
+            '冬至',
+            '小寒',
+            '大寒',
         ];
         return solarTerms.indexOf(termName);
     }

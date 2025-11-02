@@ -62,7 +62,11 @@ export class ReverseQueryEngine {
       const yearFestivals = this.getYearFestivals(year);
 
       for (const festival of yearFestivals) {
-        if (festival.name.includes(festivalName) || festivalName.includes(festival.name)) {
+        if (
+          festival.name &&
+          typeof festival.name === 'string' &&
+          (festival.name.includes(festivalName) || festivalName.includes(festival.name))
+        ) {
           const date = new Date(festival.date);
           const dateInfo = DateInfoEngine.getDateInfo(date);
           results.push(dateInfo);
@@ -206,6 +210,11 @@ export class ReverseQueryEngine {
     day: number;
     isLeap: boolean;
   } | null {
+    // 检查输入是否有效
+    if (!lunarDateStr || typeof lunarDateStr !== 'string') {
+      return null;
+    }
+
     // 匹配农历日期格式：农历YYYY年MM月DD日
     const pattern =
       /农历(\d{4})年(闰?)([正一二三四五六七八九十冬腊]+)月([初一二三四五六七八九十廿]+)/;
@@ -223,6 +232,7 @@ export class ReverseQueryEngine {
     // 转换月份
     const monthMap: { [key: string]: number } = {
       正: 1,
+      一: 1,
       二: 2,
       三: 3,
       四: 4,
@@ -232,6 +242,8 @@ export class ReverseQueryEngine {
       八: 8,
       九: 9,
       十: 10,
+      十一: 11,
+      十二: 12,
       冬: 11,
       腊: 12,
     };

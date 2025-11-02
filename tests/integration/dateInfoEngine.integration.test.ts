@@ -96,7 +96,10 @@ describe('DateInfoEngine Integration Tests', () => {
   describe('Error handling', () => {
     it('should handle invalid date gracefully', () => {
       const invalidDate = new Date('invalid');
-      expect(() => DateInfoEngine.getDateInfo(invalidDate)).toThrow();
+      // 现在 getDateInfo 有异常处理，不会抛出异常，而是返回基本信息
+      const result = DateInfoEngine.getDateInfo(invalidDate);
+      expect(result).toBeDefined();
+      expect(result.date).toBeDefined();
     });
 
     it('should handle invalid date range gracefully', () => {
